@@ -8,12 +8,11 @@ const getTokenSecondsRemaining = (token: string): number => {
   try {
     const tokenPayload = jwt.decode(token) as JwtPayload;
 
-    if (tokenPayload && tokenPayload.exp) {
+    if (!tokenPayload || !tokenPayload.exp) {
       return 0;
     }
 
-    const remainingSeconds =
-      (tokenPayload.exp as number) - Math.floor(Date.now() / 1000);
+    const remainingSeconds = (tokenPayload.exp as number) - Math.floor(Date.now() / 1000);
     return remainingSeconds > 0 ? remainingSeconds : 0;
   } catch (error) {
     console.log("Error decoding token", error);
@@ -21,18 +20,24 @@ const getTokenSecondsRemaining = (token: string): number => {
   }
 };
 
-export const setTokenInCookies=async(name: string, token: string,fallbackMaxAgeInSeconds=60 * 60*24) => {
-    let maxAgeInSeconds;
-    if(name !== "better-auth.session_token"){
-        maxAgeInSeconds=getTokenSecondsRemaining(token);
-    }
-    await setCookie(name, token, maxAgeInSeconds || fallbackMaxAgeInSeconds);
+export const setTokenInCookies = async (
+  name: string,
+  token: string,
+  fallbackMaxAgeInSeconds = 60 * 60 * 24,
+) => {
+  let maxAgeInSeconds;
+  if (name !== "better-auth.session_token") {
+    maxAgeInSeconds = getTokenSecondsRemaining(token);
+  }
+  await setCookie(name, token, maxAgeInSeconds || fallbackMaxAgeInSeconds);
 };
 
-
-export async function isTokenExpiringSoon(token: string,thresholdSeconds=300): Promise<boolean> {
+export async function isTokenExpiringSoon(
+  token: string,
+  thresholdSeconds = 300,
+): Promise<boolean> {
   const remainingSeconds = getTokenSecondsRemaining(token);
-  return remainingSeconds >0 && remainingSeconds <= thresholdSeconds;
+  return remainingSeconds > 0 && remainingSeconds <= thresholdSeconds;
 }
 
 export async function isTOkenExpired(token: string): Promise<boolean> {
