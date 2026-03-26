@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun --bun next dev", 
-    "build": "bun --bun next build", 
-    "start": "bun --bun next start", 
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-devtools": "^0.10.0",
     "@tanstack/react-form": "^1.28.5",
+    "@tanstack/react-form-devtools": "^0.2.19",
+    "@tanstack/react-form-nextjs": "^1.28.5",
     "@tanstack/react-query": "^5.95.2",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.13.6",
@@ -18,6 +21,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.7.0",
     "next": "16.2.1",
     "next-themes": "^0.4.6",
@@ -34,7 +38,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tanstack/eslint-plugin-query": "^5.95.2",
     "@types/js-cookie": "^3.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
