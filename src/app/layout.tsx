@@ -3,7 +3,7 @@ import { Roboto_Slab } from "next/font/google";
 import "./globals.css";
 
 const roboto = Roboto_Slab({
-  weight: ["400", "500", "600", "700",],
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-roboto-slab",
 });
@@ -26,7 +26,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-
       <body className={`${roboto.className} antialiased light:bg-gray-50`}>
         {children}
       </body>
