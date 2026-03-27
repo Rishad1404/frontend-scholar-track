@@ -203,7 +203,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
   }, [otp, handleVerify]);
 
   return (
-    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 lg:p-8 bg-gradient-to-br from-background via-background to-muted/30">
+    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 lg:p-8 bg-linear-to-br from-background via-background to-muted/30">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -221,7 +221,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
             {panelOrbs.map((orb, i) => (
               <motion.div
                 key={`orb-${i}`}
-                className={`absolute rounded-full ${orb.size} blur-3xl bg-white/[0.06]`}
+                className={`absolute rounded-full ${orb.size} blur-3xl bg-white/6`}
                 style={{ left: orb.left, top: orb.top }}
                 animate={{
                   y: [0, -20, 0, 20, 0],
@@ -295,7 +295,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                 <h2 className="text-2xl font-bold tracking-tight">
                   Verify Your Email
                 </h2>
-                <p className="text-white/70 text-sm leading-relaxed max-w-[260px] mx-auto">
+                <p className="text-white/70 text-sm leading-relaxed max-w-65 mx-auto">
                   Just one more step to unlock your ScholarSync account
                 </p>
               </motion.div>
@@ -305,7 +305,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                   <motion.div
                     key={feature.title}
                     variants={panelItemVariants}
-                    className="flex items-start gap-3 bg-white/[0.06] backdrop-blur-sm rounded-xl p-3.5 ring-1 ring-white/[0.08]"
+                    className="flex items-start gap-3 bg-white/6 backdrop-blur-sm rounded-xl p-3.5 ring-1 ring-white/8"
                   >
                     <div className="shrink-0 mt-0.5 bg-white/10 rounded-lg p-2">
                       <feature.icon className="size-4 text-white" />

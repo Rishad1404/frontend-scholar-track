@@ -74,8 +74,7 @@ export const adminRegisterZodSchema = z
     designation: z
       .string()
       .min(5, "Designation must be at least 5 characters")
-      .max(100, "Designation is too long")
-
+      .max(100, "Designation is too long"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -95,9 +94,6 @@ export const adminRegisterFieldSchemas = {
 
 export type IAdminRegisterPayload = z.infer<typeof adminRegisterZodSchema>;
 
-
-
-
 // -----------------------------------------------------------------------------------------------------------------------------
 // ─── Verify Email (OTP) ───
 export const verifyEmailZodSchema = z.object({
@@ -116,3 +112,27 @@ export const resendOtpZodSchema = z.object({
 });
 
 export type IResendOtpPayload = z.infer<typeof resendOtpZodSchema>;
+
+// ─── Forgot Password ───----------------------------------------------------------------------------
+export const forgotPasswordZodSchema = z.object({
+  email: z.email("Please enter a valid email address"),
+});
+
+export type IForgotPasswordPayload = z.infer<typeof forgotPasswordZodSchema>;
+
+// ─── Reset Password ───-----------------------------------------------------------------------------
+export const resetPasswordZodSchema = z.object({
+  email: z.email("Invalid email address"),
+  otp: z.string().length(6, "OTP must be exactly 6 digits"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+export type IResetPasswordPayload = z.infer<typeof resetPasswordZodSchema>;
+
+export const resetPasswordFieldSchemas = {
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+};

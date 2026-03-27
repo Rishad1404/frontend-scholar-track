@@ -26,7 +26,7 @@ export type RouteConfig = {
 
 // Routes accessible by ALL logged-in users
 export const commonProtectedRoutes: RouteConfig = {
-  exact: ["/my-profile", "/change-password", "/notifications"],
+  exact: ["/change-password", "/notifications"],
   pattern: [/^\/notifications\/.+/], // Allows dynamic routes like /notifications/:id
 };
 
