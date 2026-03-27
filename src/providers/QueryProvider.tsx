@@ -2,11 +2,7 @@
 "use client";
 
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
-import {
-  isServer,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
 
 function makeQueryClient() {
@@ -37,11 +33,7 @@ function getQueryClient() {
   }
 }
 
-export default function QueryProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function QueryProviders({ children }: { children: React.ReactNode }) {
   // NOTE: Avoid useState when initializing the query client if you don't
   //       have a suspense boundary between this and the code that may
   //       suspend because React will throw away the client on the initial

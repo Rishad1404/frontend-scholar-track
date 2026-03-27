@@ -8,7 +8,7 @@ const getTokenSecondsRemaining = (token: string): number => {
   try {
     const tokenPayload = jwt.decode(token) as JwtPayload;
 
-    if (!tokenPayload || !tokenPayload.exp) {
+    if (tokenPayload && !tokenPayload.exp) {
       return 0;
     }
 
