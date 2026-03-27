@@ -1,11 +1,14 @@
 "use client";
 
-import { loginAction } from "@/app/(commonLayout)/(auth)/login/_actions";
+import { registerAction } from "@/app/(commonLayout)/(auth)/register/_actions";
 import AppField from "@/components/shared/form/AppField";
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ILoginPayload, loginZodSchema } from "@/zod/auth.validation";
+import {
+  IRegisterPayload,
+  registerFieldSchemas,
+} from "@/zod/auth.validation";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion, easeOut } from "framer-motion";
@@ -13,9 +16,15 @@ import {
   Eye,
   EyeOff,
   GraduationCap,
-  Search,
-  ClipboardCheck,
-  Banknote,
+  Sparkles,
+  FileCheck,
+  Bell,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+
+import {
   BookOpen,
   PenTool,
   Lightbulb,
@@ -23,9 +32,7 @@ import {
   Pencil,
   Ruler,
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // ─── Brand ───
 const BRAND = {
@@ -41,7 +48,6 @@ const panelOrbs = [
   { size: "w-36 h-36", left: "15%", top: "70%", duration: 20, delay: 1 },
 ];
 
-// ─── Floating Educational Icons ───
 const floatingIcons = [
   { Icon: PenTool, left: "6%", top: "6%", size: 32, duration: 16, delay: 0, rotate: -15 },
   { Icon: BookOpen, left: "76%", top: "10%", size: 36, duration: 19, delay: 2, rotate: 10 },
@@ -55,19 +61,19 @@ const floatingIcons = [
 
 const features = [
   {
-    icon: Search,
-    title: "Discover Scholarships",
-    desc: "Browse thousands of opportunities",
+    icon: Sparkles,
+    title: "AI-Powered Matching",
+    desc: "Smart scholarship recommendations",
   },
   {
-    icon: ClipboardCheck,
-    title: "Track Applications",
-    desc: "Real-time status updates",
+    icon: FileCheck,
+    title: "Simple Applications",
+    desc: "Apply with ease in minutes",
   },
   {
-    icon: Banknote,
-    title: "Receive Funding",
-    desc: "Secure disbursement process",
+    icon: Bell,
+    title: "Instant Notifications",
+    desc: "Stay updated on your status",
   },
 ];
 
@@ -107,38 +113,76 @@ const panelItemVariants = {
 };
 
 // ─── Component ───
-interface LoginFormProps {
-  redirectPath?: string;
-}
-
-const LoginForm = ({ redirectPath }: LoginFormProps) => {
+const StudentRegisterForm = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
+  const router = useRouter();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (payload: ILoginPayload) => loginAction(payload, redirectPath),
+    mutationFn: (payload: IRegisterPayload) => registerAction(payload),
   });
 
   const form = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
     onSubmit: async ({ value }) => {
       setServerError(null);
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (await mutateAsync(value)) as any;
-        if (!result.success) {
-          setServerError(result.message || "Login failed");
+        if (result?.success) {
+          router.push(`/verify-email?email=${encodeURIComponent(result.email)}`);
+        } else {
+          setServerError(result?.message || "Registration failed");
           setShakeKey((prev) => prev + 1);
         }
       } catch (error: unknown) {
         const message =
-          error instanceof Error ? error.message : "Login failed";
+          error instanceof Error ? error.message : "Registration failed";
         setServerError(message);
         setShakeKey((prev) => prev + 1);
       }
     },
   });
+
+  const renderPasswordToggle = (
+    isVisible: boolean,
+    toggle: () => void,
+  ) => (
+    <Button
+      type="button"
+      onClick={toggle}
+      variant="ghost"
+      size="icon"
+      className="hover:bg-transparent h-auto w-auto cursor-pointer"
+      aria-label={isVisible ? "Hide password" : "Show password"}
+    >
+      <motion.div
+        key={isVisible ? "hide" : "show"}
+        initial={{ rotateY: 90, opacity: 0 }}
+        animate={{ rotateY: 0, opacity: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        {isVisible ? (
+          <EyeOff
+            className="size-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+        ) : (
+          <Eye
+            className="size-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+        )}
+      </motion.div>
+    </Button>
+  );
 
   return (
     <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 lg:p-8 bg-linear-to-br from-background via-background to-muted/30">
@@ -146,7 +190,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-md lg:max-w-4xl mx-auto"
+        className="w-full max-w-xl lg:max-w-5xl mx-auto"
       >
         <div className="overflow-hidden rounded-2xl shadow-2xl border border-border/40 flex flex-col lg:flex-row bg-card dark:bg-card/95">
           {/* ═══════════════════════════════════════════════
@@ -226,7 +270,6 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
               animate="visible"
               className="relative z-10 space-y-8"
             >
-              {/* Logo */}
               <motion.div
                 variants={panelItemVariants}
                 className="flex justify-center"
@@ -236,21 +279,19 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                 </div>
               </motion.div>
 
-              {/* Text */}
               <motion.div
                 variants={panelItemVariants}
                 className="text-center space-y-2"
               >
                 <h2 className="text-2xl font-bold tracking-tight">
-                  Welcome to Scholar Track
+                  Start Your Journey
                 </h2>
                 <p className="text-white/70 text-sm leading-relaxed max-w-65 mx-auto">
-                  Your gateway to educational scholarships and funding
-                  opportunities
+                  Create your account and discover scholarships tailored
+                  for you
                 </p>
               </motion.div>
 
-              {/* Features */}
               <div className="space-y-3 pt-4">
                 {features.map((feature) => (
                   <motion.div
@@ -276,7 +317,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
           </div>
 
           {/* ═══════════════════════════════════════════════
-              RIGHT PANEL — Form (unchanged)
+              RIGHT PANEL — Form
               ═══════════════════════════════════════════════ */}
           <div className="flex-1 flex flex-col">
             {/* Gradient accent bar — mobile only */}
@@ -292,7 +333,11 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.35, delay: 0.1, ease: "easeOut" }}
+                transition={{
+                  duration: 0.35,
+                  delay: 0.1,
+                  ease: "easeOut",
+                }}
                 className="flex justify-center mb-6 lg:hidden"
               >
                 <Image
@@ -308,10 +353,10 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
               {/* Heading */}
               <div className="text-center lg:text-left mb-6">
                 <h1 className="text-2xl font-bold tracking-tight">
-                  Welcome Back!
+                  Create Account
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Please enter your credentials to log in
+                  Join as a student and explore scholarships
                 </p>
               </div>
 
@@ -330,13 +375,31 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                   }}
                   className="space-y-5"
                 >
-                  <div className="space-y-4">
-                    {/* Email */}
+                  {/* Row 1: Name + Email */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <motion.div variants={formItemVariants}>
+                      <form.Field
+                        name="name"
+                        validators={{
+                          onChange: registerFieldSchemas.name,
+                        }}
+                      >
+                        {(field) => (
+                          <AppField
+                            field={field}
+                            label="Full Name"
+                            type="text"
+                            placeholder="Enter your full name"
+                          />
+                        )}
+                      </form.Field>
+                    </motion.div>
+
                     <motion.div variants={formItemVariants}>
                       <form.Field
                         name="email"
                         validators={{
-                          onChange: loginZodSchema.shape.email,
+                          onChange: registerFieldSchemas.email,
                         }}
                       >
                         {(field) => (
@@ -349,68 +412,66 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                         )}
                       </form.Field>
                     </motion.div>
+                  </div>
 
-                    {/* Password */}
+                  {/* Row 2: Password + Confirm */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <motion.div variants={formItemVariants}>
                       <form.Field
                         name="password"
                         validators={{
-                          onChange: loginZodSchema.shape.password,
+                          onChange: registerFieldSchemas.password,
                         }}
                       >
                         {(field) => (
-                          <div className="space-y-1">
-                            <AppField
-                              field={field}
-                              label="Password"
-                              type={showPassword ? "text" : "password"}
-                              placeholder="Enter your password"
-                              append={
-                                <Button
-                                  type="button"
-                                  onClick={() =>
-                                    setShowPassword((v) => !v)
-                                  }
-                                  variant="ghost"
-                                  size="icon"
-                                  className="hover:bg-transparent h-auto w-auto cursor-pointer"
-                                  aria-label={
-                                    showPassword
-                                      ? "Hide password"
-                                      : "Show password"
-                                  }
-                                >
-                                  <motion.div
-                                    key={showPassword ? "hide" : "show"}
-                                    initial={{ rotateY: 90, opacity: 0 }}
-                                    animate={{ rotateY: 0, opacity: 1 }}
-                                    transition={{ duration: 0.2 }}
-                                  >
-                                    {showPassword ? (
-                                      <EyeOff
-                                        className="size-4 text-muted-foreground"
-                                        aria-hidden="true"
-                                      />
-                                    ) : (
-                                      <Eye
-                                        className="size-4 text-muted-foreground"
-                                        aria-hidden="true"
-                                      />
-                                    )}
-                                  </motion.div>
-                                </Button>
-                              }
-                            />
-                            <div className="text-right">
-                              <Link
-                                href="/forgot-password"
-                                className="text-sm font-medium hover:underline underline-offset-4 transition-all"
-                                style={{ color: BRAND.teal }}
-                              >
-                                Forgot password?
-                              </Link>
-                            </div>
-                          </div>
+                          <AppField
+                            field={field}
+                            label="Password"
+                            type={
+                              showPassword ? "text" : "password"
+                            }
+                            placeholder="Create a password"
+                            append={renderPasswordToggle(
+                              showPassword,
+                              () => setShowPassword((v) => !v),
+                            )}
+                          />
+                        )}
+                      </form.Field>
+                    </motion.div>
+
+                    <motion.div variants={formItemVariants}>
+                      <form.Field
+                        name="confirmPassword"
+                        validators={{
+                          onChangeListenTo: ["password"],
+                          onChange: ({ value, fieldApi }) => {
+                            if (!value)
+                              return "Please confirm your password";
+                            const password =
+                              fieldApi.form.getFieldValue("password");
+                            if (value !== password)
+                              return "Passwords do not match";
+                            return undefined;
+                          },
+                        }}
+                      >
+                        {(field) => (
+                          <AppField
+                            field={field}
+                            label="Confirm Password"
+                            type={
+                              showConfirmPassword
+                                ? "text"
+                                : "password"
+                            }
+                            placeholder="Confirm your password"
+                            append={renderPasswordToggle(
+                              showConfirmPassword,
+                              () =>
+                                setShowConfirmPassword((v) => !v),
+                            )}
+                          />
                         )}
                       </form.Field>
                     </motion.div>
@@ -445,20 +506,21 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                   <motion.div variants={formItemVariants}>
                     <form.Subscribe
                       selector={
-                        (s) => [s.canSubmit, s.isSubmitting] as const
+                        (s) =>
+                          [s.canSubmit, s.isSubmitting] as const
                       }
                     >
                       {([canSubmit, isSubmitting]) => (
                         <AppSubmitButton
                           isPending={isSubmitting || isPending}
-                          pendingLabel="Logging in..."
+                          pendingLabel="Creating account..."
                           disabled={!canSubmit}
                           className="text-white font-semibold shadow-lg hover:shadow-xl hover:opacity-90"
                           style={{
                             background: `linear-gradient(135deg, ${BRAND.teal}, ${BRAND.purple})`,
                           }}
                         >
-                          Log In
+                          Create Account
                         </AppSubmitButton>
                       )}
                     </form.Subscribe>
@@ -470,7 +532,11 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.5, ease: "easeOut" }}
+                transition={{
+                  duration: 0.3,
+                  delay: 0.5,
+                  ease: "easeOut",
+                }}
               >
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
@@ -517,19 +583,40 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                       d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
                     />
                   </svg>
-                  Sign in with Google
+                  Sign up with Google
                 </Button>
+              </motion.div>
+
+              {/* Admin Link */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.3 }}
+                className="mt-4"
+              >
+                <div className="rounded-lg border border-dashed p-3 text-center border-[#4b287540] dark:border-[#4b287570]">
+                  <p className="text-sm text-muted-foreground">
+                    Are you a university administrator?{" "}
+                    <Link
+                      href="/register-admin"
+                      className="font-semibold underline-offset-4 hover:underline transition-all"
+                      style={{ color: BRAND.purple }}
+                    >
+                      Register your university →
+                    </Link>
+                  </p>
+                </div>
               </motion.div>
 
               {/* Footer */}
               <div className="mt-6 text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{" "}
+                Already have an account?{" "}
                 <Link
-                  href="/register"
+                  href="/login"
                   className="font-semibold underline-offset-4 hover:underline transition-all"
-                  style={{ color: BRAND.purple }}
+                  style={{ color: BRAND.teal }}
                 >
-                  Sign up
+                  Log in
                 </Link>
               </div>
             </div>
@@ -540,4 +627,4 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
   );
 };
 
-export default LoginForm;
+export default StudentRegisterForm;

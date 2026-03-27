@@ -13,3 +13,18 @@ export interface ILoginResponse {
         emailVerified: boolean;
     }
 }
+
+
+export interface IAuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  emailVerified: boolean;
+  needPasswordChange?: boolean;
+}
+
+export interface IRegisterResponse {
+  user: IAuthUser;
+  message: string;
+}
