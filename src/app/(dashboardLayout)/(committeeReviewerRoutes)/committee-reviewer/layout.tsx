@@ -6,7 +6,6 @@ export default function CommitteeReviewerDashboardLayout({
 }>) {
   return (
     <>
-    Committee Reviewer Dashboard Layout
         {children}
     </>
   );

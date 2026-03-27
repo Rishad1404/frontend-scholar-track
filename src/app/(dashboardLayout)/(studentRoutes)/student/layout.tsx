@@ -6,7 +6,6 @@ export default function StudentDashboardLayout({
 }>) {
   return (
     <>
-    Student Dashboard Layout
         {children}
     </>
   );

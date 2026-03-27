@@ -11,14 +11,11 @@ if (!API_BASE_URL) {
 
 /**
  * Try to refresh tokens by calling the backend refresh endpoint.
- *
- * Note: we DON'T call any Next cookies().set helpers here because
- * cookies().set is only allowed in Server Actions or Route Handlers.
- * Instead we return the new tokens so the caller (server branch of
- * axiosInstance) can use them for the immediate request (Authorization
- * header and Cookie header) without persisting them via Next's cookie API.
  */
-async function tryRefreshToken(accessToken: string, refreshToken: string): Promise<{
+async function tryRefreshToken(
+  accessToken: string,
+  refreshToken: string,
+): Promise<{
   accessToken?: string;
   refreshToken?: string;
   sessionToken?: string;
@@ -66,16 +63,12 @@ const axiosInstance = async () => {
   // If window is undefined => server-side
   if (typeof window === "undefined") {
     // server
-  const headersMod = await import("next/headers");
-  const cookieStore = await headersMod.cookies();
+    const headersMod = await import("next/headers");
+    const cookieStore = await headersMod.cookies();
 
     const accessToken = cookieStore.get("accessToken")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
-    // Attempt to refresh tokens if access token is expiring. We don't persist
-    // any refreshed tokens to Next's cookies here (cookies().set is restricted
-    // to server actions/route handlers). Instead we use refreshed tokens for
-    // this request only.
     let refreshedTokens = null;
     if (accessToken && refreshToken) {
       refreshedTokens = await tryRefreshToken(accessToken, refreshToken);
@@ -93,7 +86,10 @@ const axiosInstance = async () => {
           if (cookie.name === "refreshToken" && refreshedTokens.refreshToken) {
             return `refreshToken=${refreshedTokens.refreshToken}`;
           }
-          if (cookie.name === "better-auth.session_token" && refreshedTokens.sessionToken) {
+          if (
+            cookie.name === "better-auth.session_token" &&
+            refreshedTokens.sessionToken
+          ) {
             return `better-auth.session_token=${refreshedTokens.sessionToken}`;
           }
         }
@@ -147,7 +143,7 @@ const httpGet = async <TData>(
   options?: ApiRequestOptions,
 ): Promise<ApiResponse<TData>> => {
   try {
-    const instance =await axiosInstance();
+    const instance = await axiosInstance();
     const response = await instance.get<ApiResponse<TData>>(endpoint, {
       params: options?.params,
       headers: options?.headers,
@@ -165,7 +161,7 @@ const httpPost = async <TData>(
   options?: ApiRequestOptions,
 ): Promise<ApiResponse<TData>> => {
   try {
-    const instance=await axiosInstance();
+    const instance = await axiosInstance();
     const response = await instance.post<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
       headers: options?.headers,
@@ -183,7 +179,7 @@ const httpPut = async <TData>(
   options?: ApiRequestOptions,
 ): Promise<ApiResponse<TData>> => {
   try {
-    const instance=await axiosInstance();
+    const instance = await axiosInstance();
     const response = await instance.put<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
       headers: options?.headers,
@@ -201,7 +197,7 @@ const httpPatch = async <TData>(
   options?: ApiRequestOptions,
 ): Promise<ApiResponse<TData>> => {
   try {
-    const instance=await axiosInstance();
+    const instance = await axiosInstance();
     const response = await instance.patch<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
       headers: options?.headers,
@@ -218,7 +214,7 @@ const httpDelete = async <TData>(
   options?: ApiRequestOptions,
 ): Promise<ApiResponse<TData>> => {
   try {
-    const instance=await axiosInstance();
+    const instance = await axiosInstance();
     const response = await instance.delete<ApiResponse<TData>>(endpoint, {
       params: options?.params,
       headers: options?.headers,

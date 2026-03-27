@@ -5,7 +5,7 @@ import {
   isAuthRoute,
   isValidRedirectForRole,
   UserRole,
-} from "./authUtils";
+} from "./lib/authUtils";
 
 // ─── EDGE-SAFE JWT DECODER (decode only, no verification) ───
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,7 +60,6 @@ export async function proxy(request: NextRequest) {
     if (pathname === "/verify-email") {
       if (isValid && userRole && decoded) {
         if (decoded.emailVerified === false) {
-          // Genuinely needs verification → allow
           return NextResponse.next();
         }
         // Already verified → dashboard
@@ -129,3 +128,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 }
+
+
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.well-known).*)",
+  ],
+};

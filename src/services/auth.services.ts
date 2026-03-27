@@ -2,6 +2,7 @@
 
 import { setTokenInCookies } from "@/lib/tokenUtils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -77,4 +78,29 @@ export async function getUserInfo(){
     const {data}=await res.json();
     return data
 
+}
+
+
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const sessionToken = cookieStore.get("better-auth.session_token")?.value;
+
+  try {
+    await fetch(`${BASE_API_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `accessToken=${accessToken}; better-auth.session_token=${sessionToken || ""}`,
+      },
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+
+  cookieStore.delete("accessToken");
+  cookieStore.delete("refreshToken");
+  cookieStore.delete("better-auth.session_token");
+
+  redirect("/login");
 }

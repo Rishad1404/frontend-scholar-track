@@ -34,7 +34,6 @@ export const registerZodSchema = z
     path: ["confirmPassword"],
   });
 
-// Individual field schemas for TanStack Form field-level validation
 export const registerFieldSchemas = {
   name: registerZodSchema.shape.name,
   email: registerZodSchema.shape.email,
@@ -106,9 +105,9 @@ export const verifyEmailZodSchema = z.object({
 
 export type IVerifyEmailPayload = z.infer<typeof verifyEmailZodSchema>;
 
-// ─── Resend OTP ───
+// ─── Resend OTP ───---------------------------------------------------------------------------------------------------
 export const resendOtpZodSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
+  email: z.email("Please enter a valid email"),
 });
 
 export type IResendOtpPayload = z.infer<typeof resendOtpZodSchema>;

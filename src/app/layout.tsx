@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProviders from "@/providers/QueryProvider";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   weight: ["400", "500", "600", "700"],
@@ -12,7 +13,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Scholar Track",
   description: "A comprehensive scholarship tracking platform",
-
   icons: {
     icon: "/tab.png",
     shortcut: "/tab.png",
@@ -27,8 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased light:bg-gray-50`}>
-        <QueryProviders>{children}</QueryProviders>
+      <body className={`${inter.className} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProviders>{children}</QueryProviders>
+        </ThemeProvider>
       </body>
     </html>
   );

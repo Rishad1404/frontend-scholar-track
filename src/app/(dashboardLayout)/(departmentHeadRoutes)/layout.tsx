@@ -6,7 +6,6 @@ export default function DepartmentHeadDashboardLayout({
 }>) {
   return (
     <>  
-    Department Head Dashboard Layout
         {children}
     </>
   );

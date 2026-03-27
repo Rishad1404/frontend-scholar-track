@@ -6,7 +6,6 @@ export default function SuperAdminDashboardLayout({
 }>) {
   return (
     <>
-    Super Admin Dashboard Layout
         {children}
     </>
   );
