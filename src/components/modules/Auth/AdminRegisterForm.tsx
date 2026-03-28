@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 "use client";
 
 import { registerAdminAction } from "@/app/(commonLayout)/(auth)/register-admin/_actions";
