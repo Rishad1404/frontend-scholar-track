@@ -48,7 +48,7 @@ const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Scholarships", href: "/scholarships" },
   { label: "Universities", href: "/universities" },
-  { label: "How It Works", href: "/about-us#how-it-works" },
+  { label: "How It Works", href: "/how-it-works" },
   { label: "About Us", href: "/about-us" },
   { label: "Contact Us", href: "/contact-us" },
 ];
@@ -110,15 +110,15 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           /* 1. Increased max-width from max-w-7xl to max-w-[1400px] */
-          "pointer-events-auto relative w-[98%] max-w-[1400px] overflow-hidden rounded-full transition-all duration-500",
+          "pointer-events-auto relative w-[98%] max-w-350 overflow-hidden rounded-full transition-all duration-500",
           isScrolled
             /* 2. Lowered opacity to bg-background/60 for a more translucent glass effect */
-            ? "border border-border/40 bg-background/60 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15),_0_4px_12px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-background/40 dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.5)] py-1.5"
+            ? "border border-border/40 bg-background/60 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-background/40 dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.5)] py-1.5"
             : "border border-border/20 bg-background/20 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/5 dark:bg-background/20 py-2.5"
         )}
       >
         {/* ═══ 3D Inner Glow / Highlights ═══ */}
-        <div className="absolute inset-0 rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),_inset_0_-1px_2px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),_inset_0_-1px_2px_rgba(0,0,0,0.2)] pointer-events-none" />
+        <div className="absolute inset-0 rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),inset_0_-1px_2px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),inset_0_-1px_2px_rgba(0,0,0,0.2)] pointer-events-none" />
 
         <div className="flex h-12 lg:h-14 items-center justify-between px-5 lg:px-8">
           
@@ -257,7 +257,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                             {userInfo.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
-                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-[2px] border-background bg-emerald-500" />
+                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-emerald-500" />
                       </div>
 
                       <span className="max-w-27.5 truncate text-[13.5px] font-bold text-foreground">

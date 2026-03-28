@@ -1,9 +1,19 @@
-const AboutUsPage = () => {
-  return (
-    <div>
-      <h1>This is AboutUsPage page</h1>
-    </div>
-  );
-};
+import { AboutHeroSection } from "@/components/modules/AboutUs/sections/AboutHeroSection";
+import { MissionVisionSection } from "@/components/modules/AboutUs/sections/MissionVisionSection";
+import { OurStorySection } from "@/components/modules/AboutUs/sections/OurStorySection";
+import { CoreValuesSection } from "@/components/modules/AboutUs/sections/CoreValuesSection";
+import { AboutCTASection } from "@/components/modules/AboutUs/sections/AboutCTASection";
+import CreatorSection from "@/components/modules/AboutUs/sections/CreatorSection";
 
-export default AboutUsPage;
+export default function AboutUsPage() {
+  return (
+    <>
+      <AboutHeroSection />
+      <MissionVisionSection />
+      <OurStorySection />
+      <CoreValuesSection />
+      <CreatorSection />
+      <AboutCTASection />
+    </>
+  );
+}
