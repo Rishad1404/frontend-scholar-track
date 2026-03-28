@@ -14,8 +14,8 @@ import { getIconComponent } from "@/lib/iconMapper";
 import { cn } from "@/lib/utils";
 import { NavSection } from "@/types/dashboard.types";
 import { UserInfo } from "@/types/user.types";
-import { motion, easeOut } from "framer-motion";
-import { LogOut, Menu, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence, easeOut } from "framer-motion";
+import { LogOut, ChevronRight, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -74,16 +74,73 @@ const navContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.03, delayChildren: 0.1 },
+    transition: {
+      staggerChildren: 0.035,
+      delayChildren: 0.15,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: { staggerChildren: 0.02, staggerDirection: -1 },
+  },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, x: -16 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.3, ease: easeOut },
+  },
+  exit: {
+    opacity: 0,
+    x: -10,
+    transition: { duration: 0.15 },
   },
 };
 
 const navItemVariants = {
-  hidden: { opacity: 0, x: -10 },
+  hidden: { opacity: 0, x: -20, scale: 0.95 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.2, ease: easeOut },
+    scale: 1,
+    transition: {
+      duration: 0.25,
+      ease: easeOut,
+    },
+  },
+  exit: {
+    opacity: 0,
+    x: -12,
+    scale: 0.95,
+    transition: { duration: 0.12 },
+  },
+};
+
+const userInfoVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: easeOut,
+      delay: 0.25,
+    },
+  },
+};
+
+const logoVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.35,
+      ease: easeOut,
+      delay: 0.05,
+    },
   },
 };
 
@@ -115,43 +172,98 @@ const MobileSidebar = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0 cursor-pointer rounded-lg text-muted-foreground md:hidden"
+          className="h-9 w-9 shrink-0 cursor-pointer rounded-xl text-muted-foreground transition-colors hover:text-foreground md:hidden"
         >
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Menu className="h-5 w-5" />
-          </motion.div>
+          <AnimatePresence mode="wait">
+            {open ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                }}
+              >
+                <X className="h-5 w-5" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                exit={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                }}
+              >
+                <Menu className="h-5 w-5" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-70 p-0">
-        <div className="flex h-full flex-col">
+      <SheetContent side="left" className="w-71.25 p-0 border-r-0 [&>button]:hidden">
+        <div className="flex h-full flex-col overflow-hidden">
           {/* ═══ Header ═══ */}
           <SheetHeader className="border-b p-0">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-            <Link href={dashboardHome} onClick={handleNavClick}>
+            <motion.div variants={logoVariants} initial="hidden" animate="visible">
               <div
-                className="flex h-16 items-center gap-3 px-5"
+                className="flex h-16 items-center justify-between px-5"
                 style={{
                   background: `linear-gradient(135deg, ${BRAND.purple}08, ${BRAND.teal}08)`,
                 }}
               >
-                <Image
-                  src="/logo.png"
-                  alt="ScholarTrack"
-                  width={140}
-                  height={40}
-                  className="h-9 w-auto object-contain"
-                  priority
-                />
+                <Link href={dashboardHome} onClick={handleNavClick}>
+                  <motion.div
+                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.05, rotate: -2 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 15,
+                    }}
+                  >
+                    <Image
+                      src="/logo.png"
+                      alt="ScholarTrack"
+                      width={140}
+                      height={40}
+                      className="h-9 w-auto object-contain"
+                      priority
+                    />
+                  </motion.div>
+                </Link>
+
+                {/* Close Button */}
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.85 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 15,
+                  }}
+                  onClick={() => setOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                >
+                  <X className="h-4.5 w-4.5" />
+                </motion.button>
               </div>
-            </Link>
+            </motion.div>
 
             {/* Gradient accent */}
-            <div
-              className="h-0.5"
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.5, ease: easeOut, delay: 0.1 }}
+              className="h-0.5 origin-left"
               style={{
                 background: `linear-gradient(90deg, ${BRAND.purple}, ${BRAND.teal}, ${BRAND.purple}40)`,
               }}
@@ -164,15 +276,26 @@ const MobileSidebar = ({
               variants={navContainerVariants}
               initial="hidden"
               animate="visible"
+              exit="exit"
               className="space-y-5 px-3 py-4"
             >
               {navItems.map((section, sectionId) => (
-                <motion.div key={sectionId} variants={navItemVariants}>
+                <motion.div key={sectionId} variants={sectionVariants}>
                   {/* Section Title */}
                   {section.title && (
-                    <div className="mb-2 flex items-center gap-2 px-3">
-                      <div
-                        className="h-px flex-1"
+                    <motion.div
+                      variants={navItemVariants}
+                      className="mb-2 flex items-center gap-2 px-3"
+                    >
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{
+                          duration: 0.4,
+                          ease: easeOut,
+                          delay: 0.2 + sectionId * 0.05,
+                        }}
+                        className="h-px flex-1 origin-left"
                         style={{
                           background: `linear-gradient(90deg, ${BRAND.teal}25, transparent)`,
                         }}
@@ -180,13 +303,20 @@ const MobileSidebar = ({
                       <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
                         {section.title}
                       </span>
-                      <div
-                        className="h-px flex-1"
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{
+                          duration: 0.4,
+                          ease: easeOut,
+                          delay: 0.2 + sectionId * 0.05,
+                        }}
+                        className="h-px flex-1 origin-right"
                         style={{
                           background: `linear-gradient(90deg, transparent, ${BRAND.teal}25)`,
                         }}
                       />
-                    </div>
+                    </motion.div>
                   )}
 
                   {/* Nav Items */}
@@ -201,12 +331,19 @@ const MobileSidebar = ({
                       return (
                         <motion.div key={id} variants={navItemVariants}>
                           <Link href={item.href} onClick={handleNavClick}>
-                            <div
+                            <motion.div
+                              whileHover={{ x: 3 }}
+                              whileTap={{ scale: 0.97, x: 0 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 20,
+                              }}
                               className={cn(
                                 "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
                                 isActive
                                   ? "text-white shadow-md"
-                                  : "text-muted-foreground hover:text-foreground"
+                                  : "text-muted-foreground hover:text-foreground",
                               )}
                               style={
                                 isActive
@@ -227,22 +364,37 @@ const MobileSidebar = ({
                                 />
                               )}
 
+                              {/* Active indicator bar */}
+                              <AnimatePresence>
+                                {isActive && (
+                                  <motion.div
+                                    initial={{ scaleY: 0, opacity: 0 }}
+                                    animate={{ scaleY: 1, opacity: 1 }}
+                                    exit={{ scaleY: 0, opacity: 0 }}
+                                    transition={{
+                                      type: "spring",
+                                      stiffness: 300,
+                                      damping: 25,
+                                    }}
+                                    className="absolute left-0 top-1/2 h-5 w-0.75 -translate-y-1/2 rounded-r-full bg-white/80"
+                                  />
+                                )}
+                              </AnimatePresence>
+
                               <Icon
                                 className={cn(
-                                  "relative z-10 h-4.5 w-4.5 shrink-0 transition-colors duration-200",
+                                  "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-200",
                                   isActive
                                     ? "text-white"
-                                    : "text-muted-foreground group-hover:text-foreground"
+                                    : "text-muted-foreground group-hover:text-foreground",
                                 )}
                               />
-                              <span className="relative z-10 flex-1">
-                                {item.title}
-                              </span>
+                              <span className="relative z-10 flex-1">{item.title}</span>
 
                               {!isActive && (
                                 <ChevronRight className="relative z-10 h-3.5 w-3.5 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-50" />
                               )}
-                            </div>
+                            </motion.div>
                           </Link>
                         </motion.div>
                       );
@@ -250,9 +402,9 @@ const MobileSidebar = ({
                   </div>
 
                   {sectionId < navItems.length - 1 && (
-                    <div className="pt-3">
-                      <Separator className="opacity-50" />
-                    </div>
+                    <motion.div variants={navItemVariants} className="pt-3">
+                      <Separator className="opacity-40" />
+                    </motion.div>
                   )}
                 </motion.div>
               ))}
@@ -260,33 +412,68 @@ const MobileSidebar = ({
           </ScrollArea>
 
           {/* ═══ User Info + Logout ═══ */}
-          <div className="shrink-0 border-t">
-            <div
-              className="h-px"
+          <motion.div
+            variants={userInfoVariants}
+            initial="hidden"
+            animate="visible"
+            className="shrink-0 border-t"
+          >
+            {/* Gradient line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.5, ease: easeOut, delay: 0.3 }}
+              className="h-px origin-center"
               style={{
                 background: `linear-gradient(90deg, transparent, ${BRAND.teal}20, transparent)`,
               }}
             />
 
             <div className="px-3 py-3.5">
-              <div className="flex items-center gap-3 rounded-xl p-2.5">
+              <motion.div
+                whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-3 rounded-xl p-2.5"
+              >
                 {/* Avatar */}
-                <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white ring-2 ring-offset-1 ring-offset-card"
-                  style={{
-                    background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                <motion.div
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 15,
                   }}
+                  className="relative shrink-0"
                 >
-                  <span className="text-sm font-bold">
-                    {userInfo.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                  <div
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-white ring-2 ring-offset-1 ring-offset-card"
+                    style={{
+                      background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                    }}
+                  >
+                    <span className="text-sm font-bold">
+                      {userInfo.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  {/* Online dot */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 15,
+                      delay: 0.4,
+                    }}
+                    className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card"
+                    style={{ background: "#22c55e" }}
+                  />
+                </motion.div>
 
                 {/* Name & Role */}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">
-                    {userInfo.name}
-                  </p>
+                  <p className="truncate text-sm font-semibold">{userInfo.name}</p>
                   <span
                     className="mt-0.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
                     style={roleBadgeStyle}
@@ -297,8 +484,13 @@ const MobileSidebar = ({
 
                 {/* Logout */}
                 <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.15, rotate: -5 }}
+                  whileTap={{ scale: 0.85 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 15,
+                  }}
                   onClick={() => {
                     handleNavClick();
                     onLogout();
@@ -308,9 +500,9 @@ const MobileSidebar = ({
                 >
                   <LogOut className="h-4 w-4" />
                 </motion.button>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </SheetContent>
     </Sheet>

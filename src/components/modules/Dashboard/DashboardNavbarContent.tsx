@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import MobileSidebar from "./MobileSidebar";
 import NotificationPopover from "./NotificationPopover";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 // ─── Brand ───
 const BRAND = {
@@ -182,7 +184,6 @@ interface DashboardNavbarContentProps {
   userInfo: UserInfo;
   navItems: NavSection[];
   dashboardHome: string;
-  unreadCount: number;
 }
 
 // ─── Component ───
@@ -190,7 +191,6 @@ const DashboardNavbarContent = ({
   userInfo,
   navItems,
   dashboardHome,
-  unreadCount,
 }: DashboardNavbarContentProps) => {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
@@ -198,6 +198,7 @@ const DashboardNavbarContent = ({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     setMounted(true);
@@ -437,7 +438,7 @@ const DashboardNavbarContent = ({
           </motion.div>
 
           {/* ─── Notifications ─── */}
-          <NotificationPopover initialUnreadCount={unreadCount} />
+          <NotificationPopover  />
 
           <Separator orientation="vertical" className="hidden h-6 opacity-50 md:block" />
 

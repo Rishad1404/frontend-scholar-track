@@ -4,6 +4,21 @@ import { cookies } from "next/headers";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+async function fetchWithAuth(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include", // Automatically sends cookies
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+  return res;
+}
+
+
+
+
 async function getAuthHeaders() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -23,8 +38,8 @@ export async function getUnreadNotificationCount(): Promise<number> {
       cache: "no-store",
     });
     if (!res.ok) return 0;
-    const { data } = await res.json();
-    return data?.count ?? 0;
+    const json = await res.json();
+    return json?.data?.unreadCount ?? json?.data?.count ?? 0;
   } catch {
     return 0;
   }
@@ -39,7 +54,7 @@ export async function getRecentNotifications(limit = 5) {
         method: "GET",
         headers,
         cache: "no-store",
-      }
+      },
     );
     if (!res.ok) return [];
     const json = await res.json();

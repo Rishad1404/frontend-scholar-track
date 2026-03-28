@@ -1,9 +1,9 @@
 import { getDefaultDashboardRoute } from "@/lib/authUtils";
 import { getNavItemsByRole } from "@/lib/navItems";
 import { getUserInfo } from "@/services/auth.services";
-
 import { NavSection } from "@/types/dashboard.types";
 import { redirect } from "next/navigation";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import DashboardNavbarContent from "./DashboardNavbarContent";
 import { getUnreadNotificationCount } from "@/services/notification.service";
 
@@ -19,12 +19,13 @@ const DashboardNavbar = async () => {
   const unreadCount = await getUnreadNotificationCount();
 
   return (
-    <DashboardNavbarContent
-      userInfo={userInfo}
-      navItems={navItems}
-      dashboardHome={dashboardHome}
-      unreadCount={unreadCount}
-    />
+    <NotificationProvider initialCount={unreadCount}>
+      <DashboardNavbarContent
+        userInfo={userInfo}
+        navItems={navItems}
+        dashboardHome={dashboardHome}
+      />
+    </NotificationProvider>
   );
 };
 

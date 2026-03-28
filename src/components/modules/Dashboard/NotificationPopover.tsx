@@ -1,13 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { useNotifications } from "@/contexts/NotificationContext";
 import {
   getRecentNotifications,
-  getUnreadNotificationCount,
   markAllNotificationsAsRead,
   markNotificationAsRead,
 } from "@/services/notification.service";
@@ -19,10 +22,10 @@ import {
   Check,
   CheckCheck,
   ChevronRight,
-  FileText,
   ClipboardCheck,
-  XCircle,
   Eye,
+  FileText,
+  XCircle,
   ThumbsUp,
   ThumbsDown,
   Banknote,
@@ -32,9 +35,7 @@ import {
   ShieldAlert,
   Sparkles,
   Loader2,
-  ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -155,21 +156,17 @@ const itemVariants = {
   },
 };
 
-// ─── Props ───
-interface NotificationPopoverProps {
-  initialUnreadCount: number;
-}
-
-// ─── Component ───
-const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) => {
+const NotificationPopover = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const [isLoading, setIsLoading] = useState(false);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
+  const [markingId, setMarkingId] = useState<string | null>(null);
   const router = useRouter();
 
-  // ─── Fetch notifications when popover opens ───
+  const { unreadCount, decrementUnreadCount, resetUnreadCount } =
+    useNotifications();
+
   const fetchNotifications = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -182,50 +179,35 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
     }
   }, []);
 
-  // ─── Fetch unread count ───
-  const fetchUnreadCount = useCallback(async () => {
-    try {
-      const count = await getUnreadNotificationCount();
-      setUnreadCount(count);
-    } catch {
-      // silently fail
-    }
-  }, []);
-
-  // ─── Auto-refresh: Poll every 30 seconds ───
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchUnreadCount();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [fetchUnreadCount]);
-
-  // ─── Fetch when popover opens ───
   useEffect(() => {
     if (isOpen) {
       fetchNotifications();
     }
   }, [isOpen, fetchNotifications]);
 
-  // ─── Handle marking a single notification as read ───
-  const handleMarkAsRead = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation(); // Prevent the view details click from firing
-    await markNotificationAsRead(id);
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
-    );
-    setUnreadCount((prev) => Math.max(0, prev - 1));
+  const handleMarkSingleAsRead = async (notification: INotification) => {
+    if (notification.isRead) return;
+
+    setMarkingId(notification.id);
+    try {
+      const result = await markNotificationAsRead(notification.id);
+
+      if (result !== null) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notification.id ? { ...n, isRead: true } : n
+          )
+        );
+        decrementUnreadCount();
+      }
+    } finally {
+      setMarkingId(null);
+    }
   };
 
-  // ─── Handle viewing details ───
   const handleViewDetails = async (notification: INotification) => {
     if (!notification.isRead) {
-      await markNotificationAsRead(notification.id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n)),
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+      await handleMarkSingleAsRead(notification);
     }
 
     setIsOpen(false);
@@ -237,14 +219,13 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
     }
   };
 
-  // ─── Mark all as read ───
   const handleMarkAllAsRead = async () => {
     setIsMarkingAll(true);
     try {
       const success = await markAllNotificationsAsRead();
       if (success) {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-        setUnreadCount(0);
+        resetUnreadCount();
       }
     } finally {
       setIsMarkingAll(false);
@@ -262,36 +243,33 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-9 w-9 cursor-pointer rounded-xl text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+            className="relative h-9 w-9 cursor-pointer rounded-xl text-muted-foreground transition-colors hover:text-foreground"
             title="Notifications"
           >
             <Bell className="h-4.5 w-4.5" />
 
-            {/* Unread Badge */}
             <AnimatePresence>
               {unreadCount > 0 && (
-                <>
-                  {/* Soft pulsing glow aura */}
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.3, 1] }}
-                    exit={{ opacity: 0, scale: 0 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute right-1.5 top-1.5 z-10 h-2.5 w-2.5 rounded-full bg-rose-500 blur-[3px]"
-                  />
-                  {/* Solid crisp light */}
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                    className="absolute right-1.5 top-1.5 z-10 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-card"
-                  />
-                </>
+                <motion.span
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 15,
+                  }}
+                  className="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+                  style={{
+                    background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                    boxShadow: `0 2px 8px ${BRAND.teal}40`,
+                  }}
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </motion.span>
               )}
             </AnimatePresence>
 
-            {/* Ping */}
             {unreadCount > 0 && (
               <span
                 className="absolute -right-0.5 -top-0.5 h-4.5 w-4.5 animate-ping rounded-full opacity-20"
@@ -305,24 +283,27 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
       <PopoverContent
         align="end"
         sideOffset={12}
-        className="w-95 rounded-xl border border-border/40 bg-card/95 p-0 shadow-xl backdrop-blur-md"
+        className="w-97.5 rounded-xl border p-0 shadow-xl"
       >
-        {/* ═══ Header ═══ */}
-        <div className="flex items-center justify-between px-4 py-3 bg-muted/20 rounded-t-xl">
-          <div className="flex items-center gap-2.5">
-            <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
-            {unreadCount > 0 && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="rounded-md px-2 py-0.5 text-[10px] font-bold text-white tracking-wide"
-                style={{
-                  background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
-                }}
-              >
-                {unreadCount} new
-              </motion.span>
-            )}
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold">Notifications</h3>
+            <AnimatePresence>
+              {unreadCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
+                  style={{
+                    background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                  }}
+                >
+                  {unreadCount} new
+                </motion.span>
+              )}
+            </AnimatePresence>
           </div>
 
           {hasUnread && (
@@ -331,7 +312,7 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={isMarkingAll}
-              className="h-7 cursor-pointer gap-1.5 rounded-lg px-2 text-xs font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+              className="h-7 cursor-pointer gap-1.5 rounded-lg px-2 text-xs text-muted-foreground hover:text-foreground"
             >
               {isMarkingAll ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -343,45 +324,45 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
           )}
         </div>
 
-        <Separator className="bg-border/40" />
+        <Separator />
 
-        {/* ═══ Notification List ═══ */}
-        <ScrollArea className="max-h-100">
+        {/* Notification List */}
+        <ScrollArea className="max-h-110">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <div className="flex items-center justify-center py-12">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
               >
                 <Loader2 className="h-6 w-6" style={{ color: BRAND.teal }} />
               </motion.div>
-              <p className="text-xs text-muted-foreground animate-pulse">
-                Loading updates...
-              </p>
             </div>
-          ) : notifications.length === 0 ? (
-            /* Empty State */
+          ) : safeNotifications.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center gap-3 py-14"
+              className="flex flex-col items-center justify-center gap-3 py-12"
             >
               <div
                 className="flex h-14 w-14 items-center justify-center rounded-full"
                 style={{ background: `${BRAND.teal}10` }}
               >
-                <BellOff className="h-6 w-6" style={{ color: `${BRAND.teal}60` }} />
+                <BellOff
+                  className="h-7 w-7"
+                  style={{ color: `${BRAND.teal}60` }}
+                />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-foreground">All caught up!</p>
-                <p className="mt-1 text-xs text-muted-foreground max-w-50 leading-relaxed">
-                  You have no new notifications right now. Check back later.
+                <p className="text-sm font-medium text-foreground">
+                  All caught up!
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  No new notifications right now
                 </p>
               </div>
             </motion.div>
           ) : (
-            /* Notification Items */
             <motion.div
               variants={listVariants}
               initial="hidden"
@@ -389,11 +370,12 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
               className="py-1"
             >
               <AnimatePresence>
-                {notifications.map((notification) => {
+                {safeNotifications.map((notification) => {
                   const config =
                     NOTIFICATION_CONFIG[notification.type] ||
                     NOTIFICATION_CONFIG.SYSTEM_ANNOUNCEMENT;
                   const Icon = config.icon;
+                  const isMarkingThis = markingId === notification.id;
 
                   return (
                     <motion.div
@@ -401,89 +383,104 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
                       variants={itemVariants}
                       exit="exit"
                       layout
-                      className="group relative"
                     >
-                      <div
-                        className={cn(
-                          "flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors duration-200",
-                          !notification.isRead ? "bg-muted/10" : "hover:bg-muted/30",
-                        )}
-                      >
-                        {/* Interactive Highlight Bar for Unread */}
-                        {!notification.isRead && (
+                      <div className="px-4 py-3 transition-colors duration-150 hover:bg-muted/40">
+                        <div className="flex items-start gap-3">
+                          {/* Icon */}
                           <div
-                            className="absolute left-0 top-0 bottom-0 w-0.5"
-                            style={{
-                              background: `linear-gradient(to bottom, ${BRAND.purple}, ${BRAND.teal})`,
-                            }}
-                          />
-                        )}
-
-                        {/* Icon */}
-                        <div
-                          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg shadow-sm transition-transform duration-200 group-hover:scale-105"
-                          style={{
-                            background: config.bgColor,
-                            border: `1px solid ${config.color}20`,
-                          }}
-                        >
-                          <Icon className="h-4 w-4" style={{ color: config.color }} />
-                        </div>
-
-                        {/* Content */}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <p
-                              className={cn(
-                                "text-sm leading-tight pr-2",
-                                notification.isRead
-                                  ? "font-medium text-foreground/80"
-                                  : "font-semibold text-foreground",
-                              )}
-                            >
-                              {notification.title}
-                            </p>
+                            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                            style={{ background: config.bgColor }}
+                          >
+                            <Icon
+                              className="h-4 w-4"
+                              style={{ color: config.color }}
+                            />
                           </div>
 
-                          <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground/90">
-                            {notification.message}
-                          </p>
+                          {/* Content */}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <p
+                                className={`text-sm leading-tight ${
+                                  notification.isRead
+                                    ? "font-normal text-foreground/80"
+                                    : "font-semibold text-foreground"
+                                }`}
+                              >
+                                {notification.title}
+                              </p>
 
-                          <div className="mt-2 flex items-center justify-between">
-                            <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">
-                              {timeAgo(notification.createdAt)}
-                            </span>
+                              {!notification.isRead && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                                  }}
+                                />
+                              )}
+                            </div>
 
-                            {/* Action Buttons (Visible on hover or if unread) */}
-                            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                              {notification.message}
+                            </p>
+
+                            <div className="mt-1.5 flex items-center gap-2">
+                              <span className="text-[10px] text-muted-foreground/60">
+                                {timeAgo(notification.createdAt)}
+                              </span>
+
+                              {!notification.isRead && (
+                                <span
+                                  className="rounded-full px-1.5 py-px text-[9px] font-medium"
+                                  style={{
+                                    background: config.bgColor,
+                                    color: config.color,
+                                  }}
+                                >
+                                  New
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="mt-3 flex items-center gap-2">
                               {!notification.isRead && (
                                 <Button
-                                  variant="ghost"
+                                  type="button"
+                                  variant="outline"
                                   size="sm"
-                                  onClick={(e) => handleMarkAsRead(e, notification.id)}
-                                  className="h-6 px-2 text-[10px] font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                  disabled={isMarkingThis}
+                                  onClick={() =>
+                                    handleMarkSingleAsRead(notification)
+                                  }
+                                  className="h-7 cursor-pointer rounded-lg px-2.5 text-xs"
                                 >
-                                  <Check className="h-3 w-3 mr-1" />
-                                  Mark read
+                                  {isMarkingThis ? (
+                                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                  ) : (
+                                    <Check className="mr-1 h-3 w-3" />
+                                  )}
+                                  Mark as read
                                 </Button>
                               )}
 
                               <Button
+                                type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleViewDetails(notification)}
-                                className="h-6 px-2 text-[10px] font-medium transition-colors"
+                                className="h-7 cursor-pointer rounded-lg px-2.5 text-xs"
                                 style={{ color: BRAND.teal }}
                               >
                                 View details
-                                <ArrowRight className="h-3 w-3 ml-1" />
+                                <ChevronRight className="ml-1 h-3.5 w-3.5" />
                               </Button>
                             </div>
                           </div>
                         </div>
                       </div>
-
-                      <Separator className="bg-border/30 opacity-50" />
                     </motion.div>
                   );
                 })}
@@ -492,21 +489,24 @@ const NotificationPopover = ({ initialUnreadCount }: NotificationPopoverProps) =
           )}
         </ScrollArea>
 
-        {/* ═══ Footer ═══ */}
-        {notifications.length > 0 && (
-          <div className="p-2 bg-card rounded-b-xl border-t border-border/40">
-            <Link href="/notifications" onClick={() => setIsOpen(false)}>
-              <motion.div
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors hover:bg-muted/50"
+        {/* Footer */}
+        {safeNotifications.length > 0 && (
+          <>
+            <Separator />
+            <div className="p-2">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  router.push("/notifications");
+                }}
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/50"
                 style={{ color: BRAND.teal }}
               >
-                <span>View all notifications</span>
-                <ChevronRight className="h-3.5 w-3.5" />
-              </motion.div>
-            </Link>
-          </div>
+                <span>View All Notifications</span>
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </>
         )}
       </PopoverContent>
     </Popover>
