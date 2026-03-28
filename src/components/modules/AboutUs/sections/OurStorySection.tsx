@@ -6,28 +6,28 @@ const BRAND = { teal: "#0097b2", purple: "#4b2875" };
 
 const timeline = [
   {
-    year: "2022",
-    title: "The Idea",
+    year: "Early March 2026",
+    title: "The Concept & Architecture",
     description:
-      "Born from firsthand experience with the frustrations of scholarship applications — scattered deadlines, opaque review processes, and lost documents. We knew there had to be a better way.",
+      "Recognized the heavy friction in traditional scholarship systems. Sketched the initial database schema, defined the complex multi-role architecture (Admin, Reviewer, Student), and selected a modern Next.js tech stack.",
   },
   {
-    year: "2023",
-    title: "Building the Foundation",
+    year: "Mid March 2026",
+    title: "Core Infrastructure & Security",
     description:
-      "Assembled a passionate team of engineers, educators, and financial aid professionals. Built the core platform with AI-powered evaluation, multi-role access, and end-to-end tracking.",
+      "Developed the robust backend foundation. Engineered secure JWT authentication, strict role-based access control (RBAC) middleware, and the core API routes to handle universities and applications.",
   },
   {
-    year: "2024",
-    title: "Launch & Growth",
+    year: "Late March 2026",
+    title: "Premium UI & Experience",
     description:
-      "Launched with 10 partner universities and quickly grew to 50+. Processed over 500 scholarships and helped disburse $2M+ in funding directly to students.",
+      "Transformed the frontend into a world-class SaaS experience. Built glassmorphic dashboards, integrated fluid Framer Motion animations, and designed intuitive, highly responsive application workflows.",
   },
   {
-    year: "2025",
-    title: "Scaling Impact",
+    year: "Present & Future",
+    title: "Refinement & Deployment",
     description:
-      "Expanding globally with advanced AI capabilities, Stripe-powered disbursements, and a growing community of 10,000+ students across multiple countries.",
+      "Conducting end-to-end testing, optimizing complex database queries for sub-second load times, and preparing ScholarTrack for a full-scale deployment to revolutionize education funding.",
   },
 ];
 
@@ -96,9 +96,7 @@ export function OurStorySection() {
                   {/* Content */}
                   <div
                     className={`ml-12 md:ml-0 md:w-1/2 ${
-                      index % 2 === 0
-                        ? "md:pr-12 md:text-right"
-                        : "md:pl-12 md:text-left"
+                      index % 2 === 0 ? "md:pr-12 md:text-right" : "md:pl-12 md:text-left"
                     }`}
                   >
                     <span

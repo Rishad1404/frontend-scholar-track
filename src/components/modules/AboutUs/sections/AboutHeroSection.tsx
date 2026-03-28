@@ -88,8 +88,8 @@ export function AboutHeroSection() {
                   <h.icon className="h-6 w-6" style={{ color: BRAND.teal }} />
                 </div>
                 <p
-                  className="text-2xl font-extrabold"
-                  style={{ color: BRAND.purple }}
+                  className="text-2xl font-extrabold text-[#4b2875] dark:text-purple-300"
+                  
                 >
                   {h.value}
                 </p>

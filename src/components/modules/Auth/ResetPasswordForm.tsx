@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { resetPasswordAction } from "@/app/(commonLayout)/(auth)/reset-password/_actions";
@@ -8,7 +10,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   IResetPasswordPayload,
-  resetPasswordZodSchema,
   resetPasswordFieldSchemas,
 } from "@/zod/auth.validation";
 import { useForm } from "@tanstack/react-form";
@@ -26,7 +27,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // ─── Brand ───
 const BRAND = {

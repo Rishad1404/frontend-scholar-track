@@ -7,7 +7,7 @@ const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const res = await fetch(url, {
     ...options,
-    credentials: "include", // Automatically sends cookies
+    credentials: "include", 
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
@@ -15,7 +15,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   });
   return res;
 }
-
 
 
 

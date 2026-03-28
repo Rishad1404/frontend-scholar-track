@@ -45,7 +45,7 @@ const MOBILE_NAV_LINKS = [
   { label: "Home", href: "/", icon: Home },
   { label: "Scholarships", href: "/scholarships", icon: Sparkles },
   { label: "Universities", href: "/universities", icon: Building2 },
-  { label: "How It Works", href: "/about-us#how-it-works", icon: BookOpen },
+  { label: "How It Works", href: "/how-it-works", icon: BookOpen },
   { label: "About Us", href: "/about-us", icon: Info },
   { label: "Contact Us", href: "/contact-us", icon: Mail },
 ];

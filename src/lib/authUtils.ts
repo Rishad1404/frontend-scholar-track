@@ -5,6 +5,12 @@ export type UserRole =
   | "COMMITTEE_REVIEWER"
   | "STUDENT";
 
+export type SubscriptionStatus = 
+  | "INACTIVE"
+  | "ACTIVE"
+  | "EXPIRED"
+  | "CANCELLED";
+
 export const authRoutes = [
   "/login",
   "/register",
@@ -27,7 +33,7 @@ export type RouteConfig = {
 // Routes accessible by ALL logged-in users
 export const commonProtectedRoutes: RouteConfig = {
   exact: ["/change-password", "/notifications"],
-  pattern: [/^\/notifications\/.+/], // Allows dynamic routes like /notifications/:id
+  pattern: [/^\/notifications\/.+/],
 };
 
 export const superAdminProtectedRoutes: RouteConfig = {
@@ -54,6 +60,48 @@ export const studentProtectedRoutes: RouteConfig = {
   pattern: [/^\/student/],
   exact: [],
 };
+
+
+export const subscriptionExemptRoutes: RouteConfig = {
+  exact: [
+    "/admin/subscription",
+    "/admin/my-profile",
+  ],
+  pattern: [],
+};
+
+// Routes that require WRITE access (blocked for EXPIRED/CANCELLED)
+export const adminWriteRoutes: RouteConfig = {
+  exact: [
+    "/admin/scholarships-management/create",
+    "/admin/departments-management/create",
+    "/admin/department-heads-management/add",
+    "/admin/reviewers-management/add",
+    "/admin/invites-management/send",
+    "/admin/disbursements-management/create",
+    "/admin/academic-levels-management/create",
+    "/admin/academic-terms-management/create",
+  ],
+  pattern: [
+    /^\/admin\/.*\/edit$/,        // Any edit route
+    /^\/admin\/.*\/delete$/,      // Any delete route
+    /^\/admin\/.*\/approve$/,     // Any approve route
+    /^\/admin\/.*\/reject$/,      // Any reject route
+    /^\/admin\/.*\/publish$/,     // Any publish route
+    /^\/admin\/applications-management\/.*\/decision$/, // Application decisions
+  ],
+};
+
+// Check if route is exempt from subscription requirement
+export const isSubscriptionExemptRoute = (pathname: string): boolean => {
+  return isRouteMatches(pathname, subscriptionExemptRoutes);
+};
+
+// Check if route requires write permissions
+export const isWriteRoute = (pathname: string): boolean => {
+  return isRouteMatches(pathname, adminWriteRoutes);
+};
+
 
 export const isRouteMatches = (pathname: string, routes: RouteConfig) => {
   if (routes.exact.includes(pathname)) {
@@ -93,12 +141,10 @@ export const getDefaultDashboardRoute = (role: UserRole) => {
 
 export const isValidRedirectForRole = (redirectPath: string, role: UserRole) => {
   const routeOwner = getRouteOwner(redirectPath);
-
-  // If it's a public route (null) or a shared protected route ("COMMON"), anyone can go there
+  
   if (routeOwner === null || routeOwner === "COMMON") {
     return true;
   }
-
-  // Otherwise, strict role matching
+  
   return routeOwner === role;
 };

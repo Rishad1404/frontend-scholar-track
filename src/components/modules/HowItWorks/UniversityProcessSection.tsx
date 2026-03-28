@@ -18,7 +18,8 @@ const steps = [
     step: "01",
     icon: Building2,
     title: "Register University",
-    description: "Admin registers the university with details like name, website, and logo. Account is pending until approved.",
+    description:
+      "Admin registers the university with details like name, website, and logo. Account is pending until approved.",
     details: [
       "University profile with branding",
       "Admin account created as owner",
@@ -29,7 +30,8 @@ const steps = [
     step: "02",
     icon: Settings,
     title: "Configure Platform",
-    description: "Set up departments, academic levels, terms, and manage subscription for full access.",
+    description:
+      "Set up departments, academic levels, terms, and manage subscription for full access.",
     details: [
       "Create departments (e.g., CSE, EEE, BBA)",
       "Add academic levels (Undergrad, Masters, PhD)",
@@ -40,7 +42,8 @@ const steps = [
     step: "03",
     icon: Users,
     title: "Add Staff Members",
-    description: "Invite or directly add department heads and committee reviewers with role-based access.",
+    description:
+      "Invite or directly add department heads and committee reviewers with role-based access.",
     details: [
       "Direct add with auto-generated credentials",
       "Email invite with secure token link",
@@ -51,7 +54,8 @@ const steps = [
     step: "04",
     icon: Award,
     title: "Create Scholarships",
-    description: "Build scholarship listings with criteria, deadlines, funding amounts, and required documents.",
+    description:
+      "Build scholarship listings with criteria, deadlines, funding amounts, and required documents.",
     details: [
       "Set eligibility: min GPA, financial need, dept, level",
       "Define quota and per-student amount",
@@ -63,7 +67,8 @@ const steps = [
     step: "05",
     icon: BarChart3,
     title: "Manage Applications",
-    description: "Track all applications, view AI evaluations, and make final approve/reject decisions.",
+    description:
+      "Track all applications, view AI evaluations, and make final approve/reject decisions.",
     details: [
       "View all applications with status filters",
       "See AI eligibility scores and essay analysis",
@@ -75,7 +80,8 @@ const steps = [
     step: "06",
     icon: CreditCard,
     title: "Process Disbursements",
-    description: "Create disbursements for approved applications and process payments via Stripe.",
+    description:
+      "Create disbursements for approved applications and process payments via Stripe.",
     details: [
       "Create disbursement linked to application",
       "Process through Stripe Connect",
@@ -95,10 +101,7 @@ export function UniversityProcessSection() {
           viewport={{ once: true }}
           className="mb-14 text-center"
         >
-          <span
-            className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider"
-            style={{ background: `${BRAND.purple}15`, color: BRAND.purple }}
-          >
+          <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#4b2875]/10 text-[#4b2875] dark:bg-[#4b2875]/25 dark:text-purple-300">
             For Universities
           </span>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
@@ -138,10 +141,7 @@ export function UniversityProcessSection() {
                   >
                     <s.icon className="h-5 w-5" />
                   </div>
-                  <span
-                    className="text-2xl font-extrabold"
-                    style={{ color: `${BRAND.purple}25` }}
-                  >
+                  <span className="text-2xl font-extrabold text-[#4b2875]/20 dark:text-purple-300/20">
                     {s.step}
                   </span>
                 </div>
@@ -159,10 +159,7 @@ export function UniversityProcessSection() {
                       key={d}
                       className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400"
                     >
-                      <ChevronRight
-                        className="mt-0.5 h-3 w-3 shrink-0"
-                        style={{ color: BRAND.purple }}
-                      />
+                      <ChevronRight className="mt-0.5 h-3 w-3 shrink-0 text-[#4b2875] dark:text-purple-400" />
                       <span>{d}</span>
                     </li>
                   ))}

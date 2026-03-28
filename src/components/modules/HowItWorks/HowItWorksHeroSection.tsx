@@ -19,10 +19,26 @@ const item = {
 };
 
 const roles = [
-  { label: "Students", color: BRAND.teal },
-  { label: "University Admins", color: BRAND.purple },
-  { label: "Department Heads", color: "#10b981" },
-  { label: "Reviewers", color: "#f59e0b" },
+  {
+    label: "Students",
+    bg: "bg-[#0097b2]/15 dark:bg-[#0097b2]/25",
+    text: "text-[#0097b2] dark:text-teal-300",
+  },
+  {
+    label: "University Admins",
+    bg: "bg-[#4b2875]/15 dark:bg-[#4b2875]/25",
+    text: "text-[#4b2875] dark:text-purple-300",
+  },
+  {
+    label: "Department Heads",
+    bg: "bg-emerald-500/15 dark:bg-emerald-500/25",
+    text: "text-emerald-600 dark:text-emerald-300",
+  },
+  {
+    label: "Reviewers",
+    bg: "bg-amber-500/15 dark:bg-amber-500/25",
+    text: "text-amber-600 dark:text-amber-300",
+  },
 ];
 
 export function HowItWorksHeroSection() {
@@ -36,21 +52,14 @@ export function HowItWorksHeroSection() {
           className="mx-auto max-w-4xl text-center"
         >
           <motion.div variants={item} className="mb-6">
-            <div
-              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
-              style={{ background: `${BRAND.purple}12` }}
-            >
-              <Workflow
-                className="h-7 w-7"
-                style={{ color: BRAND.purple }}
-              />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#4b2875]/10 dark:bg-[#4b2875]/25">
+              <Workflow className="h-7 w-7 text-[#4b2875] dark:text-purple-300" />
             </div>
           </motion.div>
 
           <motion.span
             variants={item}
-            className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider"
-            style={{ background: `${BRAND.purple}15`, color: BRAND.purple }}
+            className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#4b2875]/10 text-[#4b2875] dark:bg-[#4b2875]/25 dark:text-purple-300"
           >
             Process Overview
           </motion.span>
@@ -88,11 +97,7 @@ export function HowItWorksHeroSection() {
             {roles.map((role) => (
               <span
                 key={role.label}
-                className="rounded-full px-4 py-1.5 text-xs font-semibold"
-                style={{
-                  background: `${role.color}12`,
-                  color: role.color,
-                }}
+                className={`rounded-full px-4 py-1.5 text-xs font-semibold ${role.bg} ${role.text}`}
               >
                 {role.label}
               </span>

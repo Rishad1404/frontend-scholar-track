@@ -18,7 +18,8 @@ const steps = [
     step: "01",
     icon: UserPlus,
     title: "Create Your Account",
-    description: "Sign up with email or Google OAuth. Verify your email address to activate your account.",
+    description:
+      "Sign up with email or Google OAuth. Verify your email address to activate your account.",
     details: [
       "Quick email or Google registration",
       "OTP-based email verification",
@@ -29,7 +30,8 @@ const steps = [
     step: "02",
     icon: ClipboardList,
     title: "Complete Your Profile",
-    description: "Fill in personal details and academic information in a guided two-step process.",
+    description:
+      "Fill in personal details and academic information in a guided two-step process.",
     details: [
       "Step 1: Personal info — name, gender, date of birth, phone, address",
       "Step 2: Academic info — university, department, GPA, CGPA, level, term",
@@ -40,7 +42,8 @@ const steps = [
     step: "03",
     icon: Search,
     title: "Browse Scholarships",
-    description: "Discover available scholarships filtered by your eligibility, department, and academic level.",
+    description:
+      "Discover available scholarships filtered by your eligibility, department, and academic level.",
     details: [
       "Filter by university, department, level",
       "See requirements: min GPA, documents needed",
@@ -51,7 +54,8 @@ const steps = [
     step: "04",
     icon: FileUp,
     title: "Prepare & Upload Documents",
-    description: "Upload required documents like transcripts, ID, essays, and recommendation letters.",
+    description:
+      "Upload required documents like transcripts, ID, essays, and recommendation letters.",
     details: [
       "Supported types: transcript, income certificate, ID, essay, recommendation",
       "Single or bulk document upload",
@@ -62,7 +66,8 @@ const steps = [
     step: "05",
     icon: Send,
     title: "Submit Application",
-    description: "Review your application, add an optional essay, and submit. You can save drafts anytime.",
+    description:
+      "Review your application, add an optional essay, and submit. You can save drafts anytime.",
     details: [
       "Save as draft and return later",
       "Write a personal essay (optional per scholarship)",
@@ -73,7 +78,8 @@ const steps = [
     step: "06",
     icon: Bell,
     title: "Track & Receive Updates",
-    description: "Monitor your application status in real-time and receive notifications at every stage.",
+    description:
+      "Monitor your application status in real-time and receive notifications at every stage.",
     details: [
       "Status: Draft → Submitted → Screening → Under Review → Approved/Rejected → Disbursed",
       "In-app and email notifications",
@@ -92,10 +98,7 @@ export function StudentProcessSection() {
           viewport={{ once: true }}
           className="mb-14 text-center"
         >
-          <span
-            className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider"
-            style={{ background: `${BRAND.teal}15`, color: BRAND.teal }}
-          >
+          <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#0097b2]/10 text-[#0097b2] dark:bg-[#0097b2]/25 dark:text-teal-300">
             For Students
           </span>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
@@ -136,15 +139,11 @@ export function StudentProcessSection() {
                   >
                     <s.icon className="h-5 w-5" />
                   </div>
-                  <span
-                    className="text-2xl font-extrabold"
-                    style={{ color: `${BRAND.teal}25` }}
-                  >
+                  <span className="text-2xl font-extrabold text-[#0097b2]/20 dark:text-teal-300/20">
                     {s.step}
                   </span>
                 </div>
 
-                {/* Content */}
                 <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
                   {s.title}
                 </h3>
@@ -152,17 +151,13 @@ export function StudentProcessSection() {
                   {s.description}
                 </p>
 
-                {/* Details */}
                 <ul className="space-y-1.5">
                   {s.details.map((d) => (
                     <li
                       key={d}
                       className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400"
                     >
-                      <ChevronRight
-                        className="mt-0.5 h-3 w-3 shrink-0"
-                        style={{ color: BRAND.teal }}
-                      />
+                      <ChevronRight className="mt-0.5 h-3 w-3 shrink-0 text-[#0097b2] dark:text-teal-400" />
                       <span>{d}</span>
                     </li>
                   ))}

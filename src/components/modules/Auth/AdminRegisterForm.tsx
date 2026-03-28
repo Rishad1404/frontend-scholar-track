@@ -244,7 +244,7 @@ const AdminRegisterForm = () => {
   );
 
   return (
-    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 lg:p-8 bg-linear-to-br from-background via-background to-muted/30">
+    <section className="relative flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 lg:p-8 ">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -727,8 +727,8 @@ const AdminRegisterForm = () => {
                   Already have an account?{" "}
                   <Link
                     href="/login"
-                    className="font-semibold underline-offset-4 hover:underline transition-all"
-                    style={{ color: BRAND.purple }}
+                    className="font-semibold underline-offset-4 hover:underline transition-all text-[#4b2875] dark:text-purple-400"
+                    
                   >
                     Log in
                   </Link>

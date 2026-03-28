@@ -474,15 +474,14 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                           className="flex items-center gap-4 px-3 py-3.5 mt-1"
                         >
                           <div
-                            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm"
+                            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm bg-teal-100"
                             style={{
-                              background: `${BRAND.purple}15`,
                               border: `1px solid ${BRAND.purple}20`,
                             }}
                           >
                             <Shield
-                              className="h-5.5 w-5.5"
-                              style={{ color: BRAND.purple }}
+                              className="h-5.5 w-5.5 text-[#4b2875] dark:text-purple-400"
+                              
                             />
                           </div>
                           <div className="flex-1">

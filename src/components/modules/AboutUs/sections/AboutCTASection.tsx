@@ -54,8 +54,8 @@ export function AboutCTASection() {
                   >
                     <Button
                       size="lg"
-                      className="group h-12 cursor-pointer gap-2 rounded-2xl bg-white px-8 font-semibold shadow-xl hover:bg-gray-50"
-                      style={{ color: BRAND.purple }}
+                      className="group h-12 cursor-pointer gap-2 rounded-2xl bg-white px-8 font-semibold shadow-xl text-[#4b2875] dark:text-purple-300 hover:bg-gray-50"
+                      
                     >
                       <GraduationCap className="h-5 w-5" />
                       Get Started

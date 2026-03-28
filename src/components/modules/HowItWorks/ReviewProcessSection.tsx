@@ -17,6 +17,9 @@ const reviewStages = [
     role: "Department Head",
     title: "Application Screening",
     color: "#10b981",
+    roleBg: "bg-emerald-500/10 dark:bg-emerald-500/25",
+    roleText: "text-emerald-600 dark:text-emerald-300",
+    arrowText: "text-emerald-500 dark:text-emerald-400",
     description:
       "Department heads perform initial screening for applications tied to their department. They verify basic eligibility and pass or reject applications.",
     actions: [
@@ -31,6 +34,9 @@ const reviewStages = [
     role: "AI System",
     title: "AI Evaluation",
     color: BRAND.teal,
+    roleBg: "bg-[#0097b2]/10 dark:bg-[#0097b2]/25",
+    roleText: "text-[#0097b2] dark:text-teal-300",
+    arrowText: "text-[#0097b2] dark:text-teal-400",
     description:
       "Our AI analyzes the application holistically — evaluating eligibility, essay quality, financial need, and overall merit to generate an objective score.",
     actions: [
@@ -45,6 +51,9 @@ const reviewStages = [
     role: "Committee Reviewer",
     title: "Human Review & Scoring",
     color: "#f59e0b",
+    roleBg: "bg-amber-500/10 dark:bg-amber-500/25",
+    roleText: "text-amber-600 dark:text-amber-300",
+    arrowText: "text-amber-500 dark:text-amber-400",
     description:
       "University-wide reviewers evaluate applications with a structured scoring rubric covering GPA, essay, financial need, and custom criteria.",
     actions: [
@@ -59,6 +68,9 @@ const reviewStages = [
     role: "University Admin",
     title: "Final Decision",
     color: BRAND.purple,
+    roleBg: "bg-[#4b2875]/10 dark:bg-[#4b2875]/25",
+    roleText: "text-[#4b2875] dark:text-purple-300",
+    arrowText: "text-[#4b2875] dark:text-purple-400",
     description:
       "Admin reviews all scores — AI evaluation, screening result, and reviewer scores — then makes the final approval or rejection decision.",
     actions: [
@@ -80,10 +92,7 @@ export function ReviewProcessSection() {
           viewport={{ once: true }}
           className="mb-14 text-center"
         >
-          <span
-            className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider"
-            style={{ background: `${BRAND.teal}15`, color: BRAND.teal }}
-          >
+          <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#0097b2]/10 text-[#0097b2] dark:bg-[#0097b2]/25 dark:text-teal-300">
             Review Pipeline
           </span>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
@@ -129,11 +138,7 @@ export function ReviewProcessSection() {
                       <stage.icon className="h-6 w-6" />
                     </div>
                     <span
-                      className="inline-block rounded-full px-3 py-1 text-xs font-bold"
-                      style={{
-                        background: `${stage.color}12`,
-                        color: stage.color,
-                      }}
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${stage.roleBg} ${stage.roleText}`}
                     >
                       {stage.role}
                     </span>
@@ -155,8 +160,7 @@ export function ReviewProcessSection() {
                           className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400"
                         >
                           <ArrowRight
-                            className="mt-0.5 h-3.5 w-3.5 shrink-0"
-                            style={{ color: stage.color }}
+                            className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${stage.arrowText}`}
                           />
                           <span>{action}</span>
                         </li>
@@ -165,13 +169,9 @@ export function ReviewProcessSection() {
                   </div>
                 </div>
 
-                {/* Connector Arrow */}
                 {index < reviewStages.length - 1 && (
                   <div className="mt-6 flex justify-center">
-                    <div
-                      className="h-6 w-0.5"
-                      style={{ background: `${stage.color}30` }}
-                    />
+                    <div className="h-6 w-0.5 bg-gray-200 dark:bg-gray-700" />
                   </div>
                 )}
               </motion.div>
