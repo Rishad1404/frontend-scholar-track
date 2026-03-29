@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useNotifications } from "@/contexts/NotificationContext";
-import { markNotificationAsRead } from "@/services/notification.service";
+import { markNotificationAsRead } from "@/services/notification.services";
 import { INotification, NotificationType } from "@/types/notification.types";
 import { motion } from "framer-motion";
 import {

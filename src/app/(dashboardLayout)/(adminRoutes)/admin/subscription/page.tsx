@@ -3,32 +3,26 @@
 import {
   getSubscriptionStatus,
   getPaymentHistory,
-} from "@/services/subscription.service";
+} from "@/services/subscription.services";
 
-import { Crown, Loader2 } from "lucide-react";
+import { Crown } from "lucide-react";
 import { AlertBanner } from "@/components/modules/Admin/subscription/AlertBanner";
 import { PricingCard } from "@/components/modules/Admin/subscription/PricingCard";
 import { SubscriptionStatus } from "@/components/modules/Admin/subscription/SubscriptionStatus";
 import { PaymentHistory } from "@/components/modules/Admin/subscription/PaymentHistory";
-
-const BRAND = { teal: "#0097b2", purple: "#4b2875" };
 
 export default async function SubscriptionPage({
   searchParams,
 }: {
   searchParams: Promise<{ success?: string; canceled?: string }>;
 }) {
-  // ✅ Await searchParams (Next.js 15+)
   const params = await searchParams;
 
-  // Fetch data server-side using httpClient
   const [statusResponse, paymentsResponse] = await Promise.all([
     getSubscriptionStatus(),
     getPaymentHistory(),
   ]);
 
-  // ✅ Extract data properly from your API response wrapper
-  // Your backend returns: { success: true, data: { status, plan, ... } }
   const status = (statusResponse as any)?.data || statusResponse || null;
   const payments =
     (paymentsResponse as any)?.data?.data ||
@@ -36,13 +30,6 @@ export default async function SubscriptionPage({
     paymentsResponse ||
     [];
 
-  // Debug log to see what we got
-  console.log("=== SUBSCRIPTION PAGE DEBUG ===");
-  console.log("Status:", JSON.stringify(status, null, 2));
-  console.log("Payments:", JSON.stringify(payments, null, 2));
-  console.log("===============================");
-
-  // Determine subscription state - handle case sensitivity and null safety
   const subscriptionStatus = (status?.status || "INACTIVE").toUpperCase();
   const isActive = subscriptionStatus === "ACTIVE";
   const isExpired = subscriptionStatus === "EXPIRED";
@@ -50,57 +37,43 @@ export default async function SubscriptionPage({
   const isInactive = subscriptionStatus === "INACTIVE";
   const needsSubscription = isInactive || isExpired || isCancelled;
   
-  // Ensure status has the correct format for child components
-  const normalizedStatus = {
-    ...status,
-    status: subscriptionStatus, // Ensure status is uppercase
-    expiresAt: status?.expiresAt || status?.currentPeriodEnd || null, // Handle both field names
-  };
-
-  // Normalize payments to array
   const paymentsList = Array.isArray(payments)
     ? payments
     : payments?.payments || payments?.data || [];
 
   return (
-    <div className="mx-auto max-w-5xl py-8">
+    <div className="relative mx-auto max-w-6xl py-8 px-4 sm:px-6 lg:px-8 min-h-[80vh]">
       {/* Page Header */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-border/40 pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Subscription & Billing
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Manage your university&apos;s ScholarTrack plan.
+          <p className="mt-1.5 text-sm text-muted-foreground max-w-2xl">
+            Manage your university&apos;s ScholarTrack plan, view payment history, and monitor your account limits.
           </p>
         </div>
 
         {isActive && (
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-600 dark:text-amber-500">
+          <div className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs font-bold text-amber-600 shadow-sm dark:text-amber-500">
             <Crown className="h-4 w-4" />
             Account Owner
           </div>
         )}
       </div>
 
-      {/* ✅ Alerts - using awaited params */}
-      {(params.success || params.canceled) && (
-        <AlertBanner
-          success={params.success === "true"}
-          canceled={params.canceled === "true"}
-        />
-      )}
+      <div className="space-y-8">
+        {(params.success || params.canceled) && (
+          <AlertBanner
+            success={params.success === "true"}
+            canceled={params.canceled === "true"}
+          />
+        )}
 
-      {/* ✅ Show pricing if needs subscription */}
-      {needsSubscription && <PricingCard currentStatus={status} />}
-
-      {/* ✅ Show active status if active */}
-      {isActive && <SubscriptionStatus status={status} />}
-
-      {/* ✅ Always show payment history if available */}
-      {paymentsList.length > 0 && (
-        <PaymentHistory payments={paymentsList} />
-      )}
+        {needsSubscription && <PricingCard currentStatus={status} />}
+        {isActive && <SubscriptionStatus status={status} />}
+        {paymentsList.length > 0 && <PaymentHistory payments={paymentsList} />}
+      </div>
     </div>
   );
 }

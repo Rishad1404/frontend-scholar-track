@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { createCheckoutSession } from "@/services/subscription.service";
+import { createCheckoutSession } from "@/services/subscription.services";
 import { ShieldCheck, CreditCard, Loader2 } from "lucide-react";
 
 const BRAND = { teal: "#0097b2", purple: "#4b2875" };

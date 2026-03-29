@@ -61,6 +61,9 @@ const ParticleBackground = () => {
   }, []);
 
   const isDark = resolvedTheme === "dark";
+  // Prevent server/client hydration mismatches by rendering this
+  // visual-only background only on the client after mount.
+  if (!mounted) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">

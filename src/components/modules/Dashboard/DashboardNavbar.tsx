@@ -5,7 +5,7 @@ import { NavSection } from "@/types/dashboard.types";
 import { redirect } from "next/navigation";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import DashboardNavbarContent from "./DashboardNavbarContent";
-import { getUnreadNotificationCount } from "@/services/notification.service";
+import { getUnreadNotificationCount } from "@/services/notification.services";
 
 const DashboardNavbar = async () => {
   const userInfo = await getUserInfo();

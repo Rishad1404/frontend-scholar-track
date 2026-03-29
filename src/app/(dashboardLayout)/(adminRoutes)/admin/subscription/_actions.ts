@@ -3,7 +3,6 @@
 
 import { httpClient } from "@/lib/axios/httpClient";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export type SubscriptionStatus = {
   status: "INACTIVE" | "ACTIVE" | "EXPIRED" | "CANCELLED";

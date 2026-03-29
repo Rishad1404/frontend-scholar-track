@@ -141,11 +141,9 @@ export async function proxy(request: NextRequest) {
     ) {
       const refreshToken = request.cookies.get("refreshToken")?.value;
       if (refreshToken) {
-        // ✅ Allow Stripe return page to load; httpClient will refresh token if needed
         return NextResponse.next();
       }
-      // ✅ Even if no refreshToken, allow page to load (user can re-login if needed)
-      // This prevents premature redirect to login before Stripe callback completes
+
       return NextResponse.next();
     }
 

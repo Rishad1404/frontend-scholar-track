@@ -10,7 +10,7 @@ import {
   getRecentNotifications,
   markAllNotificationsAsRead,
   markNotificationAsRead,
-} from "@/services/notification.service";
+} from "@/services/notification.services";
 import { INotification, NotificationType } from "@/types/notification.types";
 import { motion, easeOut } from "framer-motion";
 import {
