@@ -1,9 +1,11 @@
-const AcademicTermManagementPage = () => {
-  return (
-    <div>
-      <h1>This is AcademicTermManagementPage page</h1>
-    </div>
-  );
+import AcademicTermTable from "@/components/modules/Admin/AcademicTerm/AcademicTermTable";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Academic Term Management | Scholar Track",
+  description: "Manage academic terms for your university",
 };
 
-export default AcademicTermManagementPage;
+export default function AcademicTermManagementPage() {
+  return <AcademicTermTable />;
+}
