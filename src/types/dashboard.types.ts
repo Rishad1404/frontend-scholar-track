@@ -1,4 +1,13 @@
+export interface NavItem {
+  title: string;
+  href: string;
+  icon: string;
+}
 
+export interface NavSection {
+  title?: string;
+  items: NavItem[];
+}
 export interface ChartItem {
   name: string;
   value: number;
@@ -150,7 +159,7 @@ export interface SuperAdminDashboardData {
 // COMMITTEE REVIEWER DASHBOARD
 // ═══════════════════════════════════════════
 
-export interface ReviewerDashboardStats {
+export interface ReviewerDashboardData {
   university: {
     id: string;
     name: string;
@@ -181,6 +190,8 @@ export interface ReviewerDashboardStats {
     };
   };
 }
+
+
 
 // ═══════════════════════════════════════════
 // STUDENT DASHBOARD
@@ -231,4 +242,35 @@ export interface StudentDashboardData {
     applicationStatusDistribution: StatusDistribution[];
   };
   recentApplications: RecentApplication[];
+}
+
+
+
+// ═══════════════════════════════════════════
+// DEPARTMENT HEAD DASHBOARD — matches backend exactly
+// ═══════════════════════════════════════════
+
+export interface DepartmentHeadDashboardData {
+  department: {
+    id: string;
+    name: string;
+  };
+  university: {
+    id: string;
+    name: string;
+  };
+  counts: {
+    totalStudentsInDept: number;
+    totalScholarshipsForDept: number;
+    activeScholarshipsForDept: number;
+    pendingScreening: number;
+    totalScreened: number;
+    screeningPassed: number;
+    screeningRejected: number;
+  };
+  screeningRate: number;
+  charts: {
+    applicationStatusDistribution: StatusDistribution[];
+    academicStatusDistribution: StatusDistribution[];
+  };
 }

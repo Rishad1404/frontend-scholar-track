@@ -21,14 +21,13 @@ import {
   YAxis,
 } from "recharts";
 
-// ─── Brand palette ───
-const BAR_COLORS = [
-  "#0097b2", // teal (brand)
-  "#4b2875", // purple (brand)
-  "#2563eb", // blue
-  "#f59e0b", // amber
-  "#10b981", // emerald
-  "#ef4444", // rose
+const DEFAULT_COLORS = [
+  "#0097b2",
+  "#4b2875",
+  "#2563eb",
+  "#f59e0b",
+  "#10b981",
+  "#ef4444",
 ];
 
 interface DashboardBarChartProps {
@@ -36,8 +35,9 @@ interface DashboardBarChartProps {
   title?: string;
   description?: string;
   className?: string;
-  singleColor?: boolean; // use one color for all bars
-  color?: string;        // override single bar color
+  singleColor?: boolean;
+  color?: string;
+  colors?: string[];  // ← NEW: per-bar color override
   height?: number;
 }
 
@@ -51,7 +51,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className="mt-1 flex items-center gap-2">
         <div
           className="h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: payload[0]?.payload?.fill || BAR_COLORS[0] }}
+          style={{
+            backgroundColor:
+              payload[0]?.payload?.fill || DEFAULT_COLORS[0],
+          }}
         />
         <p className="text-sm text-muted-foreground">
           Count:{" "}
@@ -109,10 +112,13 @@ const DashboardBarChart = ({
   description,
   className,
   singleColor = false,
-  color = BAR_COLORS[0],
+  color = DEFAULT_COLORS[0],
+  colors,
   height = 350,
 }: DashboardBarChartProps) => {
-  // Error state
+  // Determine which color palette to use
+  const barColors = colors || DEFAULT_COLORS;
+
   if (!data || !Array.isArray(data)) {
     return (
       <EmptyState
@@ -123,7 +129,6 @@ const DashboardBarChart = ({
     );
   }
 
-  // Empty state
   if (!data.length || data.every((item) => item.value === 0)) {
     return (
       <EmptyState
@@ -179,7 +184,11 @@ const DashboardBarChart = ({
               {data.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={singleColor ? color : BAR_COLORS[index % BAR_COLORS.length]}
+                  fill={
+                    singleColor
+                      ? color
+                      : barColors[index % barColors.length]
+                  }
                 />
               ))}
             </Bar>
