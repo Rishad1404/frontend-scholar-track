@@ -1,4 +1,3 @@
-// src/app/(dashboardLayout)/(adminRoutes)/admin/academic-terms-management/_actions.ts
 
 "use server";
 

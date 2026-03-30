@@ -34,6 +34,7 @@ import { useEffect, useState, useTransition } from "react";
 import MobileSidebar from "./MobileSidebar";
 import NotificationPopover from "./NotificationPopover";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { toast } from "sonner"; // 🚨 Added Sonner import
 
 // ─── Brand ───
 const BRAND = {
@@ -208,9 +209,23 @@ const DashboardNavbarContent = ({
   const roleBadgeStyle = getRoleBadgeStyle(userInfo.role);
   const profileHref = getProfileHref(userInfo.role);
 
+  // 🚨 Added: Sonner toast logic to the logout action
   const handleLogout = () => {
+    const toastId = toast.loading("Logging out...");
+    
     startTransition(async () => {
-      await logoutAction();
+      try {
+        await logoutAction();
+        toast.success("Logged out successfully", { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        // Next.js redirect throws an error internally. We check for it so we don't show an error toast on successful redirect!
+        if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+          toast.success("Logged out successfully", { id: toastId });
+          throw error;
+        }
+        toast.error("Failed to log out. Please try again.", { id: toastId });
+      }
     });
   };
 

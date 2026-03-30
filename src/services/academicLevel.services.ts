@@ -1,4 +1,4 @@
-// src/services/academicLevel.services.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { httpClient } from "@/lib/axios/httpClient";
 import type {
@@ -7,13 +7,17 @@ import type {
 } from "@/types/academicLevel";
 import type { CreateAcademicLevelInput } from "@/zod/academicLevel.validation";
 
-const BASE = "/academic-levels";
+const BASE = "/academic-level";
 
 export const getAllAcademicLevels =
-  async (): Promise<IAcademicLevelListResponse> => {
+  async (queryString: string): Promise<IAcademicLevelListResponse> => {
     const res = await httpClient.get<IAcademicLevelListResponse>(BASE);
-    return res.data;
+    const result = (res as unknown as IAcademicLevelListResponse).success
+      ? (res as unknown as IAcademicLevelListResponse)
+      : res.data;
+    return result;
   };
+
 
 export const createAcademicLevel = async (
   data: CreateAcademicLevelInput

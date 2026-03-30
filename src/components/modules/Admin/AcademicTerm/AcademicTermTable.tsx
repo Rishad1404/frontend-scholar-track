@@ -1,5 +1,3 @@
-// src/components/modules/Dashboard/AcademicTerm/AcademicTermTable.tsx
-
 "use client";
 
 import DataTable from "@/components/shared/table/DataTable";
@@ -15,7 +13,6 @@ import { CalendarRange } from "lucide-react";
 import CreateAcademicTermModal from "./CreateAcademicTermModal";
 import DeleteAcademicTermModal from "./DeleteAcademicTermModal";
 import { academicTermColumns } from "./academicTermColumns";
-
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -40,6 +37,8 @@ export default function AcademicTermTable({
 
   const {
     queryStringFromUrl,
+    optimisticSortingState, // 🚨 Extracted sorting state
+    handleSortingChange,    // 🚨 Extracted sorting handler
     isRouteRefreshPending,
     updateParams,
   } = useServerManagedDataTable({
@@ -58,13 +57,13 @@ export default function AcademicTermTable({
     });
 
   const { data, isLoading, isFetching, refetch } = useQuery({
-    queryKey: ["academic-terms", queryString],
-    queryFn: () => getAllAcademicTerms(),
+    queryKey: ["academic-term", queryString],
+    queryFn: () => getAllAcademicTerms(queryString), 
   });
 
   const allTerms: IAcademicTerm[] = data?.data ?? [];
 
-  // Client-side filter (backend returns flat array, no searchTerm support)
+  // Client-side filter fallback (if backend doesn't support searchTerm yet)
   const filteredTerms = useMemo<IAcademicTerm[]>(() => {
     const term = searchTermFromUrl.toLowerCase().trim();
     if (!term) return allTerms;
@@ -76,7 +75,7 @@ export default function AcademicTermTable({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <CalendarRange className="h-7 w-7 text-primary" />
+            <CalendarRange className="h-7 w-7 text-primary" style={{ color: "#0097b2" }} />
             Academic Terms
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
@@ -85,22 +84,31 @@ export default function AcademicTermTable({
         </div>
       </div>
 
-      <DataTable
-        data={filteredTerms}
-        columns={academicTermColumns}
-        isLoading={isLoading || isFetching || isRouteRefreshPending}
-        emptyMessage="No academic terms found."
-        search={{
-          initialValue: searchTermFromUrl,
-          placeholder: "Filter by name...",
-          debounceMs: 400,
-          onDebouncedChange: handleDebouncedSearchChange,
-        }}
-        toolbarAction={
-          <CreateAcademicTermModal onSuccess={() => refetch()} />
-        }
-        actions={tableActions}
-      />
+      <div className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm">
+        <DataTable
+          data={filteredTerms}
+          columns={academicTermColumns}
+          isLoading={isLoading || isFetching || isRouteRefreshPending}
+          emptyMessage="No academic terms found."
+          
+          // 🚨 Wired up sorting to the DataTable
+          sorting={{
+            state: optimisticSortingState,
+            onSortingChange: handleSortingChange,
+          }}
+
+          search={{
+            initialValue: searchTermFromUrl,
+            placeholder: "Filter by name...",
+            debounceMs: 400,
+            onDebouncedChange: handleDebouncedSearchChange,
+          }}
+          toolbarAction={
+            <CreateAcademicTermModal onSuccess={() => refetch()} />
+          }
+          actions={tableActions}
+        />
+      </div>
 
       <DeleteAcademicTermModal
         open={isDeleteDialogOpen}

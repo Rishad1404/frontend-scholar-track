@@ -28,6 +28,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner"; // 🚨 Added Sonner import
 
 // ─── Brand ───
 const BRAND = {
@@ -139,20 +140,29 @@ export default function ResetPasswordForm({
         return;
       }
 
+      // 🚨 Start the premium loading toast
+      const toastId = toast.loading("Resetting password...");
+
       try {
         const result = (await mutateAsync(payload)) as any;
         if (result?.success) {
           setSuccessMessage("Password reset successfully! Redirecting to login...");
+          // 🚨 Update toast to success
+          toast.success("Password reset successfully!", { id: toastId });
           setTimeout(() => {
             router.push("/login?reset=success");
           }, 2000);
         } else {
           setServerError(result?.message || "Failed to reset password");
           setShakeKey((prev) => prev + 1);
+          // 🚨 Update toast to error
+          toast.error(result?.message || "Failed to reset password", { id: toastId });
         }
       } catch (error: unknown) {
         setServerError(error instanceof Error ? error.message : "Request failed");
         setShakeKey((prev) => prev + 1);
+        // 🚨 Update toast to error
+        toast.error(error instanceof Error ? error.message : "Request failed", { id: toastId });
       }
     },
   });

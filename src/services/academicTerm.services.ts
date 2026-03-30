@@ -1,17 +1,22 @@
+// src/services/academicTerm.services.ts
 
 import { httpClient } from "@/lib/axios/httpClient";
+import { IAcademicLevelListResponse } from "@/types/academicLevel";
 import type {
   IAcademicTermListResponse,
   IAcademicTermSingleResponse,
 } from "@/types/academicTerm";
 import type { CreateAcademicTermInput } from "@/zod/academicTerm.validation";
 
-const BASE = "/academic-terms";
+const BASE = "/academic-term";
 
 export const getAllAcademicTerms =
-  async (): Promise<IAcademicTermListResponse> => {
-    const res = await httpClient.get<IAcademicTermListResponse>(BASE);
-    return res.data;
+  async (queryString: string): Promise<IAcademicTermListResponse> => {
+    const res = await httpClient.get< IAcademicTermListResponse>(BASE);
+    const result = (res as unknown as IAcademicLevelListResponse).success
+      ? (res as unknown as IAcademicLevelListResponse)
+      : res.data;
+    return result;
   };
 
 export const createAcademicTerm = async (

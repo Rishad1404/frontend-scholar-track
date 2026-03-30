@@ -1,4 +1,4 @@
-// src/components/modules/Dashboard/AcademicTerm/DeleteAcademicTermModal.tsx
+// src/components/modules/Dashboard/Department/DeleteDepartmentModal.tsx
 
 "use client";
 
@@ -6,8 +6,8 @@ import { useMutation } from "@tanstack/react-query";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { deleteAcademicTermAction } from "@/app/(dashboardLayout)/(adminRoutes)/admin/academic-terms-management/_actions";
-import type { IAcademicTerm } from "@/types/academicTerm";
+import { deleteDepartmentAction } from "@/app/(dashboardLayout)/(adminRoutes)/admin/departments-management/_actions";
+import type { IDepartment } from "@/types/department";
 
 import {
   AlertDialog,
@@ -23,35 +23,35 @@ import {
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  term: IAcademicTerm | null;
+  department: IDepartment | null;
   onSuccess: () => void;
 }
 
-export default function DeleteAcademicTermModal({
+export default function DeleteDepartmentModal({
   open,
   onOpenChange,
-  term,
+  department,
   onSuccess,
 }: Props) {
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (id: string) => deleteAcademicTermAction(id),
+    mutationFn: (id: string) => deleteDepartmentAction(id),
   });
 
-  if (!term) return null;
+  if (!department) return null;
 
   const handleDelete = async (e: React.MouseEvent) => {
     // 🚨 Prevent the dialog from auto-closing so we can see the loading spinner
-    e.preventDefault(); 
+    e.preventDefault();
     
     // 🚨 Start the premium loading toast
-    const toastId = toast.loading("Deleting academic term...");
+    const toastId = toast.loading("Deleting department...");
 
     try {
-      const result = await mutateAsync(term.id);
+      const result = await mutateAsync(department.id);
 
       if (result.success) {
         // 🚨 Update toast to success
-        toast.success(result.message || "Academic term deleted", { id: toastId });
+        toast.success(result.message || "Department deleted", { id: toastId });
         onOpenChange(false); // Close dialog manually upon success
         onSuccess();
       } else {
@@ -72,15 +72,15 @@ export default function DeleteAcademicTermModal({
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            Delete Academic Term
+            Delete Department
           </AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete{" "}
             <span className="font-semibold text-foreground">
-              &ldquo;{term.name}&rdquo;
+              &ldquo;{department.name}&rdquo;
             </span>
-            ? This action cannot be undone. Any student academic records
-            linked to this term will lose their association.
+            ? This action cannot be undone. Departments with active department
+            heads cannot be deleted.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

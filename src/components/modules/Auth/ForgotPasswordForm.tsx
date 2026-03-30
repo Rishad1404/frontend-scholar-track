@@ -21,6 +21,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner"; // 🚨 Added Sonner import
 
 // ─── Brand ───
 const BRAND = {
@@ -112,19 +113,28 @@ const ForgotPasswordForm = () => {
     defaultValues: { email: "" },
     onSubmit: async ({ value }) => {
       setServerError(null);
+      // 🚨 Start the premium loading toast
+      const toastId = toast.loading("Sending reset link...");
+
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (await mutateAsync(value)) as any;
         if (result?.success) {
+          // 🚨 Update toast to success
+          toast.success("Reset link sent successfully!", { id: toastId });
           router.push(`/reset-password?email=${encodeURIComponent(value.email)}`);
         } else {
           setServerError(result?.message || "Failed to send reset link");
           setShakeKey((prev) => prev + 1);
+          // 🚨 Update toast to error
+          toast.error(result?.message || "Failed to send reset link", { id: toastId });
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Request failed";
         setServerError(message);
         setShakeKey((prev) => prev + 1);
+        // 🚨 Update toast to error
+        toast.error(message, { id: toastId });
       }
     },
   });

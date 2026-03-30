@@ -1,3 +1,5 @@
+// src/components/modules/Dashboard/Department/CreateDepartmentModal.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -7,11 +9,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
-import { createAcademicTermAction } from "@/app/(dashboardLayout)/(adminRoutes)/admin/academic-terms-management/_actions";
+import { createDepartmentAction } from "@/app/(dashboardLayout)/(adminRoutes)/admin/departments-management/_actions";
 import {
-  createAcademicTermSchema,
-  type CreateAcademicTermInput,
-} from "@/zod/academicTerm.validation";
+  createDepartmentSchema,
+  type CreateDepartmentInput,
+} from "@/zod/department.validation";
 
 import AppField from "@/components/shared/form/AppField";
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
@@ -29,50 +31,41 @@ import {
 
 interface Props {
   onSuccess: () => void;
-  children?: React.ReactNode;
 }
 
 const BRAND_TEAL = "#0097b2";
 const BRAND_PURPLE = "#4b2875";
 
-export default function CreateAcademicTermModal({ onSuccess, children }: Props) {
+export default function CreateDepartmentModal({ onSuccess }: Props) {
   const [open, setOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (payload: CreateAcademicTermInput) =>
-      createAcademicTermAction(payload),
+    mutationFn: (payload: CreateDepartmentInput) =>
+      createDepartmentAction(payload),
   });
 
   const form = useForm({
     defaultValues: { name: "" },
     onSubmit: async ({ value }) => {
       setServerError(null);
-      // 🚨 Added: Start the loading toast
-      const toastId = toast.loading("Creating academic term...");
+      const toastId = toast.loading("Creating department...");
 
       try {
         const result = await mutateAsync(value);
-
         if (result.success) {
-          // 🚨 Added: Update toast to success
-          toast.success(
-            result.message || "Academic term created successfully",
-            { id: toastId }
-          );
+          toast.success(result.message || "Department created successfully", { id: toastId });
           form.reset();
           setOpen(false);
           onSuccess();
         } else {
           setServerError(result.message || "Something went wrong");
-          // 🚨 Added: Update toast to error
           toast.error(result.message || "Something went wrong", { id: toastId });
         }
       } catch (error: unknown) {
         const message =
           error instanceof Error ? error.message : "Something went wrong";
         setServerError(message);
-        // 🚨 Added: Update toast to error
         toast.error(message, { id: toastId });
       }
     },
@@ -89,26 +82,23 @@ export default function CreateAcademicTermModal({ onSuccess, children }: Props) 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        {children ? (
-          children
-        ) : (
-          <Button className="gap-2 shadow-sm">
-            <Plus className="h-4 w-4" />
-            Add Term
-          </Button>
-        )}
+        <Button className="gap-2 shadow-sm">
+          <Plus className="h-4 w-4" />
+          Add Department
+        </Button>
       </DialogTrigger>
 
-      {/* Increased width to 550px and removed default padding to manage our own layout */}
-      <DialogContent className="sm:max-w-137.5 p-0 overflow-hidden border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl rounded-3xl">
+      {/* Premium styling: wider max-width, zero default padding, blur, and custom rounded corners */}
+      <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl rounded-3xl">
         
+        {/* Header Section */}
         <div className="px-6 pt-8 sm:px-8">
           <DialogHeader className="pb-2">
             <DialogTitle className="text-2xl font-extrabold tracking-tight text-foreground">
-              Create Academic Term
+              Create Department
             </DialogTitle>
             <DialogDescription className="text-base font-medium text-muted-foreground mt-1.5">
-              Add a new academic term (e.g. Term 1, Term 2). Name must be 5–20 characters.
+              Add a new department to your university. Name must be 7–255 characters.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -122,19 +112,19 @@ export default function CreateAcademicTermModal({ onSuccess, children }: Props) 
           }}
           className="flex flex-col"
         >
-          {/* Ample breathing room for the input area */}
+          {/* Form Body Section */}
           <div className="px-6 py-6 sm:px-8 space-y-6">
             <form.Field
               name="name"
               validators={{
-                onChange: createAcademicTermSchema.shape.name,
+                onChange: createDepartmentSchema.shape.name,
               }}
             >
               {(field) => (
                 <AppField
                   field={field}
-                  label="Term Name"
-                  placeholder="e.g. Term 1"
+                  label="Department Name"
+                  placeholder="e.g. Computer Science and Engineering"
                 />
               )}
             </form.Field>
@@ -155,18 +145,8 @@ export default function CreateAcademicTermModal({ onSuccess, children }: Props) 
             </AnimatePresence>
           </div>
 
-          {/* Spacious, distinctly styled footer */}
-          <DialogFooter className="border-t border-border/40 bg-muted/10 px-6 py-5 sm:px-8 flex items-center justify-end gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              className="h-11 px-6 rounded-xl font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              onClick={() => handleOpenChange(false)}
-              disabled={isPending}
-            >
-              Cancel
-            </Button>
-
+          {/* Footer Section */}
+          <DialogFooter className="border-t border-border/40 bg-muted/10 px-6 py-5 sm:px-8 flex items-center justify-end">
             <form.Subscribe
               selector={(s) => [s.canSubmit, s.isSubmitting] as const}
             >
@@ -180,7 +160,7 @@ export default function CreateAcademicTermModal({ onSuccess, children }: Props) 
                     background: `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})`,
                   }}
                 >
-                  Create Term
+                  Create Department
                 </AppSubmitButton>
               )}
             </form.Subscribe>

@@ -23,6 +23,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner"; // 🚨 Added Sonner import
 
 import {
   BookOpen,
@@ -133,20 +134,29 @@ const StudentRegisterForm = () => {
     },
     onSubmit: async ({ value }) => {
       setServerError(null);
+      // 🚨 Added: Start the loading toast
+      const toastId = toast.loading("Creating your account...");
+
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (await mutateAsync(value)) as any;
         if (result?.success) {
+          // 🚨 Added: Show success toast
+          toast.success("Registration successful! Redirecting...", { id: toastId });
           router.push(`/verify-email?email=${encodeURIComponent(result.email)}`);
         } else {
           setServerError(result?.message || "Registration failed");
           setShakeKey((prev) => prev + 1);
+          // 🚨 Added: Show error toast
+          toast.error(result?.message || "Registration failed", { id: toastId });
         }
       } catch (error: unknown) {
         const message =
           error instanceof Error ? error.message : "Registration failed";
         setServerError(message);
         setShakeKey((prev) => prev + 1);
+        // 🚨 Added: Show error toast
+        toast.error(message, { id: toastId });
       }
     },
   });

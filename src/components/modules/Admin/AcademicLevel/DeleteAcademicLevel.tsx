@@ -39,21 +39,30 @@ export default function DeleteAcademicLevelModal({
 
   if (!level) return null;
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    // 🚨 Prevent the dialog from auto-closing so we can see the loading spinner
+    e.preventDefault(); 
+    
+    // 🚨 Start the premium loading toast
+    const toastId = toast.loading("Deleting academic level...");
+
     try {
       const result = await mutateAsync(level.id);
 
       if (result.success) {
-        toast.success(result.message || "Academic level deleted");
-        onOpenChange(false);
+        // 🚨 Update toast to success
+        toast.success(result.message || "Academic level deleted", { id: toastId });
+        onOpenChange(false); // Close dialog manually upon success
         onSuccess();
       } else {
-        toast.error(result.message || "Failed to delete");
+        // 🚨 Update toast to error
+        toast.error(result.message || "Failed to delete", { id: toastId });
       }
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : "Failed to delete";
-      toast.error(message);
+      // 🚨 Update toast to error
+      toast.error(message, { id: toastId });
     }
   };
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import {
@@ -25,6 +27,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // ─── Brand ───
 const BRAND = {
@@ -42,13 +45,53 @@ const panelOrbs = [
 
 const floatingIcons = [
   { Icon: PenTool, left: "6%", top: "6%", size: 32, duration: 16, delay: 0, rotate: -15 },
-  { Icon: BookOpen, left: "76%", top: "10%", size: 36, duration: 19, delay: 2, rotate: 10 },
-  { Icon: GraduationCap, left: "82%", top: "42%", size: 34, duration: 14, delay: 4, rotate: -8 },
-  { Icon: Lightbulb, left: "10%", top: "40%", size: 28, duration: 18, delay: 1, rotate: 12 },
-  { Icon: Target, left: "70%", top: "76%", size: 30, duration: 20, delay: 3, rotate: -20 },
+  {
+    Icon: BookOpen,
+    left: "76%",
+    top: "10%",
+    size: 36,
+    duration: 19,
+    delay: 2,
+    rotate: 10,
+  },
+  {
+    Icon: GraduationCap,
+    left: "82%",
+    top: "42%",
+    size: 34,
+    duration: 14,
+    delay: 4,
+    rotate: -8,
+  },
+  {
+    Icon: Lightbulb,
+    left: "10%",
+    top: "40%",
+    size: 28,
+    duration: 18,
+    delay: 1,
+    rotate: 12,
+  },
+  {
+    Icon: Target,
+    left: "70%",
+    top: "76%",
+    size: 30,
+    duration: 20,
+    delay: 3,
+    rotate: -20,
+  },
   { Icon: Pencil, left: "18%", top: "82%", size: 26, duration: 15, delay: 5, rotate: 25 },
   { Icon: Ruler, left: "48%", top: "4%", size: 28, duration: 17, delay: 2.5, rotate: -5 },
-  { Icon: BookOpen, left: "86%", top: "85%", size: 24, duration: 21, delay: 1.5, rotate: 15 },
+  {
+    Icon: BookOpen,
+    left: "86%",
+    top: "85%",
+    size: 24,
+    duration: 21,
+    delay: 1.5,
+    rotate: 15,
+  },
 ];
 
 const features = [
@@ -105,19 +148,13 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
   const email = initialEmail || "";
 
   // ─── Verify mutation ───
-  const {
-    mutateAsync: verify,
-    isPending: isVerifying,
-  } = useMutation({
+  const { mutateAsync: verify, isPending: isVerifying } = useMutation({
     mutationFn: ({ email, otp }: { email: string; otp: string }) =>
       verifyEmailAction(email, otp),
   });
 
   // ─── Resend mutation ───
-  const {
-    mutateAsync: resend,
-    isPending: isResending,
-  } = useMutation({
+  const { mutateAsync: resend, isPending: isResending } = useMutation({
     mutationFn: (email: string) => resendOtpAction(email),
   });
 
@@ -154,19 +191,33 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
       return;
     }
 
+    // 🚨 Start the loading toast
+    const toastId = toast.loading("Verifying email...");
+
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = (await verify({ email, otp })) as any;
       if (result && !result.success) {
         setServerError(result.message || "Verification failed");
         setShakeKey((prev) => prev + 1);
         setOtp("");
+        // 🚨 Show error toast
+        toast.error(result.message || "Verification failed", { id: toastId });
+      } else {
+        // 🚨 Show success toast
+        toast.success("Email verified successfully!", { id: toastId });
       }
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Verification failed";
+    } catch (error: any) {
+      // 🚨 Handle Next.js Redirect properly for Sonner
+      if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+        toast.success("Email verified successfully!", { id: toastId });
+        throw error;
+      }
+
+      const message = error instanceof Error ? error.message : "Verification failed";
       setServerError(message);
       setShakeKey((prev) => prev + 1);
+      // 🚨 Show error toast
+      toast.error(message, { id: toastId });
     }
   }, [email, otp, verify]);
 
@@ -176,22 +227,29 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
     setServerError(null);
     setSuccessMessage(null);
 
+    // 🚨 Start the loading toast
+    const toastId = toast.loading("Sending new verification code...");
+
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = (await resend(email)) as any;
       if (result.success) {
         setSuccessMessage(result.message || "OTP sent successfully");
         setCooldown(RESEND_COOLDOWN);
         setOtp("");
+        // 🚨 Show success toast
+        toast.success(result.message || "OTP sent successfully", { id: toastId });
       } else {
         setServerError(result.message || "Failed to resend");
         setShakeKey((prev) => prev + 1);
+        // 🚨 Show error toast
+        toast.error(result.message || "Failed to resend", { id: toastId });
       }
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Failed to resend";
+      const message = error instanceof Error ? error.message : "Failed to resend";
       setServerError(message);
       setShakeKey((prev) => prev + 1);
+      // 🚨 Show error toast
+      toast.error(message, { id: toastId });
     }
   }, [email, cooldown, resend]);
 
@@ -267,8 +325,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
             <div
               className="absolute inset-0 opacity-[0.04]"
               style={{
-                backgroundImage:
-                  "radial-gradient(circle, white 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
               }}
             />
@@ -279,22 +336,14 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
               animate="visible"
               className="relative z-10 space-y-8"
             >
-              <motion.div
-                variants={panelItemVariants}
-                className="flex justify-center"
-              >
+              <motion.div variants={panelItemVariants} className="flex justify-center">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 ring-1 ring-white/10">
                   <MailCheck className="size-12 text-white" />
                 </div>
               </motion.div>
 
-              <motion.div
-                variants={panelItemVariants}
-                className="text-center space-y-2"
-              >
-                <h2 className="text-2xl font-bold tracking-tight">
-                  Verify Your Email
-                </h2>
+              <motion.div variants={panelItemVariants} className="text-center space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight">Verify Your Email</h2>
                 <p className="text-white/70 text-sm leading-relaxed max-w-65 mx-auto">
                   Just one more step to unlock your ScholarSync account
                 </p>
@@ -314,9 +363,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                       <p className="text-sm font-semibold leading-tight">
                         {feature.title}
                       </p>
-                      <p className="text-xs text-white/60 mt-0.5">
-                        {feature.desc}
-                      </p>
+                      <p className="text-xs text-white/60 mt-0.5">{feature.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -370,10 +417,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                     background: `linear-gradient(135deg, ${BRAND.teal}15, ${BRAND.purple}15)`,
                   }}
                 >
-                  <MailCheck
-                    className="size-8"
-                    style={{ color: BRAND.teal }}
-                  />
+                  <MailCheck className="size-8" style={{ color: BRAND.teal }} />
                 </div>
               </motion.div>
 
@@ -384,17 +428,12 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                 transition={{ delay: 0.2, duration: 0.3 }}
                 className="text-center mb-2"
               >
-                <h1 className="text-2xl font-bold tracking-tight">
-                  Check Your Email
-                </h1>
+                <h1 className="text-2xl font-bold tracking-tight">Check Your Email</h1>
                 <p className="text-sm text-muted-foreground mt-2">
                   We&apos;ve sent a 6-digit verification code to
                 </p>
                 {email && (
-                  <p
-                    className="text-sm font-semibold mt-1"
-                    style={{ color: BRAND.teal }}
-                  >
+                  <p className="text-sm font-semibold mt-1" style={{ color: BRAND.teal }}>
                     {email}
                   </p>
                 )}
@@ -490,10 +529,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                   Didn&apos;t receive the code?{" "}
                   {cooldown > 0 ? (
                     <span className="font-medium">
-                      Resend in{" "}
-                      <span style={{ color: BRAND.teal }}>
-                        {cooldown}s
-                      </span>
+                      Resend in <span style={{ color: BRAND.teal }}>{cooldown}s</span>
                     </span>
                   ) : (
                     <Button

@@ -205,20 +205,27 @@ const InviteManagementContent = ({
     mutationFn: cancelInvite,
     onMutate: (inviteId: string) => {
       setCancellingId(inviteId);
+      // 🚨 Start the loading toast and pass the ID to context
+      const toastId = toast.loading("Cancelling invitation...");
+      return { toastId };
     },
-    onSuccess: (response: any) => {
+    onSuccess: (response: any, variables, context) => {
+      // 🚨 Update the toast to success
       toast.success(
         response?.message ||
           response?.data?.message ||
-          "Invite cancelled successfully!"
+          "Invite cancelled successfully!",
+        { id: context?.toastId }
       );
       queryClient.invalidateQueries({ queryKey: ["invites"] });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables, context) => {
+      // 🚨 Update the toast to error
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to cancel invite"
+          "Failed to cancel invite",
+        { id: context?.toastId }
       );
     },
     onSettled: () => {

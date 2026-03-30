@@ -48,24 +48,12 @@ const CreateInviteDialog = ({ departments }: CreateInviteDialogProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // ── Create invite mutation ──
-  const { mutate: sendInvite, isPending } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: createInvite,
-    onSuccess: (response: any) => {
-      toast.success(
-        response?.message ||
-          response?.data?.message ||
-          "Invite sent successfully!"
-      );
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invites"] });
       handleReset();
       setOpen(false);
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to send invite"
-      );
     },
   });
 
@@ -78,7 +66,7 @@ const CreateInviteDialog = ({ departments }: CreateInviteDialogProps) => {
   };
 
   // ── Submit ──
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData: CreateInviteFormData = {
@@ -101,7 +89,17 @@ const CreateInviteDialog = ({ departments }: CreateInviteDialogProps) => {
     }
 
     setErrors({});
-    sendInvite(result.data);
+    
+    // 🚨 Premium Sonner Promise Toast implementation
+    toast.promise(mutateAsync(result.data), {
+      loading: 'Sending secure invitation link...',
+      success: (response: any) => {
+        return response?.message || response?.data?.message || "Invite sent successfully!";
+      },
+      error: (error: any) => {
+        return error?.response?.data?.message || error?.message || "Failed to send invite";
+      },
+    });
   };
 
   return (
@@ -113,13 +111,13 @@ const CreateInviteDialog = ({ departments }: CreateInviteDialogProps) => {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-[#0097b2] hover:bg-[#0097b2]/90">
+        <Button className="bg-[#0097b2] hover:bg-[#0097b2]/90 shadow-sm transition-all hover:shadow-md">
           <Plus className="mr-2 h-4 w-4" />
           Send Invite
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-120">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
           <DialogDescription>
@@ -239,7 +237,7 @@ const CreateInviteDialog = ({ departments }: CreateInviteDialogProps) => {
           <DialogFooter>
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               onClick={() => setOpen(false)}
               disabled={isPending}
             >
@@ -248,7 +246,7 @@ const CreateInviteDialog = ({ departments }: CreateInviteDialogProps) => {
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#0097b2] hover:bg-[#0097b2]/90"
+              className="bg-[#0097b2] hover:bg-[#0097b2]/90 text-white"
             >
               {isPending ? (
                 <>

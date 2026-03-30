@@ -39,6 +39,8 @@ export default function AcademicLevelTable({
 
   const {
     queryStringFromUrl,
+    optimisticSortingState, // 🚨 Extracted sorting state
+    handleSortingChange,    // 🚨 Extracted sorting handler
     isRouteRefreshPending,
     updateParams,
   } = useServerManagedDataTable({
@@ -57,13 +59,13 @@ export default function AcademicLevelTable({
     });
 
   const { data, isLoading, isFetching, refetch } = useQuery({
-    queryKey: ["academic-levels", queryString],
-    queryFn: () => getAllAcademicLevels(),
+    queryKey: ["academic-level", queryString],
+    queryFn: () => getAllAcademicLevels(queryString),
   });
 
   const allLevels: IAcademicLevel[] = data?.data ?? [];
 
-  // Client-side filter (backend returns flat array, no searchTerm support)
+  // Client-side filter fallback (if backend doesn't support searchTerm yet)
   const filteredLevels = useMemo<IAcademicLevel[]>(() => {
     const term = searchTermFromUrl.toLowerCase().trim();
     if (!term) return allLevels;
@@ -77,7 +79,7 @@ export default function AcademicLevelTable({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <GraduationCap className="h-7 w-7 text-primary" />
+            <GraduationCap className="h-7 w-7 text-primary" style={{ color: "#0097b2" }} />
             Academic Levels
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
@@ -86,22 +88,31 @@ export default function AcademicLevelTable({
         </div>
       </div>
 
-      <DataTable
-        data={filteredLevels}
-        columns={academicLevelColumns}
-        isLoading={isLoading || isFetching || isRouteRefreshPending}
-        emptyMessage="No academic levels found."
-        search={{
-          initialValue: searchTermFromUrl,
-          placeholder: "Filter by name...",
-          debounceMs: 400,
-          onDebouncedChange: handleDebouncedSearchChange,
-        }}
-        toolbarAction={
-          <CreateAcademicLevelModal onSuccess={() => refetch()} />
-        }
-        actions={tableActions}
-      />
+      <div className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm">
+        <DataTable
+          data={filteredLevels}
+          columns={academicLevelColumns}
+          isLoading={isLoading || isFetching || isRouteRefreshPending}
+          emptyMessage="No academic levels found."
+          
+          // 🚨 Wired up sorting to the DataTable
+          sorting={{
+            state: optimisticSortingState,
+            onSortingChange: handleSortingChange,
+          }}
+
+          search={{
+            initialValue: searchTermFromUrl,
+            placeholder: "Filter by name...",
+            debounceMs: 400,
+            onDebouncedChange: handleDebouncedSearchChange,
+          }}
+          toolbarAction={
+            <CreateAcademicLevelModal onSuccess={() => refetch()} />
+          }
+          actions={tableActions}
+        />
+      </div>
 
       <DeleteAcademicLevelModal
         open={isDeleteDialogOpen}

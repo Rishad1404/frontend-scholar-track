@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { loginAction } from "@/app/(commonLayout)/(auth)/login/_actions";
@@ -26,6 +27,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 // ─── Brand ───
 const BRAND = {
@@ -44,13 +46,53 @@ const panelOrbs = [
 // ─── Floating Educational Icons ───
 const floatingIcons = [
   { Icon: PenTool, left: "6%", top: "6%", size: 32, duration: 16, delay: 0, rotate: -15 },
-  { Icon: BookOpen, left: "76%", top: "10%", size: 36, duration: 19, delay: 2, rotate: 10 },
-  { Icon: GraduationCap, left: "82%", top: "42%", size: 34, duration: 14, delay: 4, rotate: -8 },
-  { Icon: Lightbulb, left: "10%", top: "40%", size: 28, duration: 18, delay: 1, rotate: 12 },
-  { Icon: Target, left: "70%", top: "76%", size: 30, duration: 20, delay: 3, rotate: -20 },
+  {
+    Icon: BookOpen,
+    left: "76%",
+    top: "10%",
+    size: 36,
+    duration: 19,
+    delay: 2,
+    rotate: 10,
+  },
+  {
+    Icon: GraduationCap,
+    left: "82%",
+    top: "42%",
+    size: 34,
+    duration: 14,
+    delay: 4,
+    rotate: -8,
+  },
+  {
+    Icon: Lightbulb,
+    left: "10%",
+    top: "40%",
+    size: 28,
+    duration: 18,
+    delay: 1,
+    rotate: 12,
+  },
+  {
+    Icon: Target,
+    left: "70%",
+    top: "76%",
+    size: 30,
+    duration: 20,
+    delay: 3,
+    rotate: -20,
+  },
   { Icon: Pencil, left: "18%", top: "82%", size: 26, duration: 15, delay: 5, rotate: 25 },
   { Icon: Ruler, left: "48%", top: "4%", size: 28, duration: 17, delay: 2.5, rotate: -5 },
-  { Icon: BookOpen, left: "86%", top: "85%", size: 24, duration: 21, delay: 1.5, rotate: 15 },
+  {
+    Icon: BookOpen,
+    left: "86%",
+    top: "85%",
+    size: 24,
+    duration: 21,
+    delay: 1.5,
+    rotate: 15,
+  },
 ];
 
 const features = [
@@ -124,18 +166,31 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
     defaultValues: { email: "", password: "" },
     onSubmit: async ({ value }) => {
       setServerError(null);
+      const toastId = toast.loading("Verifying credentials...");
+
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (await mutateAsync(value)) as any;
         if (!result.success) {
           setServerError(result.message || "Login failed");
           setShakeKey((prev) => prev + 1);
+          toast.error(result.message || "Login failed", { id: toastId });
+        } else {
+          toast.success("Login successful! Welcome back.", { id: toastId });
         }
-      } catch (error: unknown) {
-        const message =
-          error instanceof Error ? error.message : "Login failed";
+      } catch (error: any) {
+        // 🚨 ADDED: Intercept the Next.js redirect throw
+        if (
+          error?.digest?.startsWith("NEXT_REDIRECT") ||
+          error?.message?.includes("NEXT_REDIRECT")
+        ) {
+          toast.success("Login successful! Welcome back.", { id: toastId });
+          throw error; // Re-throw so Next.js can actually execute the route change
+        }
+
+        const message = error instanceof Error ? error.message : "Login failed";
         setServerError(message);
         setShakeKey((prev) => prev + 1);
+        toast.error(message, { id: toastId });
       }
     },
   });
@@ -213,8 +268,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
             <div
               className="absolute inset-0 opacity-[0.04]"
               style={{
-                backgroundImage:
-                  "radial-gradient(circle, white 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
               }}
             />
@@ -227,26 +281,19 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
               className="relative z-10 space-y-8"
             >
               {/* Logo */}
-              <motion.div
-                variants={panelItemVariants}
-                className="flex justify-center"
-              >
+              <motion.div variants={panelItemVariants} className="flex justify-center">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 ring-1 ring-white/10">
                   <GraduationCap className="size-12 text-white" />
                 </div>
               </motion.div>
 
               {/* Text */}
-              <motion.div
-                variants={panelItemVariants}
-                className="text-center space-y-2"
-              >
+              <motion.div variants={panelItemVariants} className="text-center space-y-2">
                 <h2 className="text-2xl font-bold tracking-tight">
                   Welcome to Scholar Track
                 </h2>
                 <p className="text-white/70 text-sm leading-relaxed max-w-65 mx-auto">
-                  Your gateway to educational scholarships and funding
-                  opportunities
+                  Your gateway to educational scholarships and funding opportunities
                 </p>
               </motion.div>
 
@@ -265,9 +312,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                       <p className="text-sm font-semibold leading-tight">
                         {feature.title}
                       </p>
-                      <p className="text-xs text-white/60 mt-0.5">
-                        {feature.desc}
-                      </p>
+                      <p className="text-xs text-white/60 mt-0.5">{feature.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -276,7 +321,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
           </div>
 
           {/* ═══════════════════════════════════════════════
-              RIGHT PANEL — Form (unchanged)
+              RIGHT PANEL — Form
               ═══════════════════════════════════════════════ */}
           <div className="flex-1 flex flex-col">
             {/* Gradient accent bar — mobile only */}
@@ -307,9 +352,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
 
               {/* Heading */}
               <div className="text-center lg:text-left mb-6">
-                <h1 className="text-2xl font-bold tracking-tight">
-                  Welcome Back!
-                </h1>
+                <h1 className="text-2xl font-bold tracking-tight">Welcome Back!</h1>
                 <p className="text-sm text-muted-foreground mt-1">
                   Please enter your credentials to log in
                 </p>
@@ -368,16 +411,12 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                               append={
                                 <Button
                                   type="button"
-                                  onClick={() =>
-                                    setShowPassword((v) => !v)
-                                  }
+                                  onClick={() => setShowPassword((v) => !v)}
                                   variant="ghost"
                                   size="icon"
                                   className="hover:bg-transparent h-auto w-auto cursor-pointer"
                                   aria-label={
-                                    showPassword
-                                      ? "Hide password"
-                                      : "Show password"
+                                    showPassword ? "Hide password" : "Show password"
                                   }
                                 >
                                   <motion.div
@@ -433,9 +472,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                         }}
                       >
                         <Alert variant="destructive">
-                          <AlertDescription>
-                            {serverError}
-                          </AlertDescription>
+                          <AlertDescription>{serverError}</AlertDescription>
                         </Alert>
                       </motion.div>
                     )}
@@ -444,9 +481,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                   {/* Submit */}
                   <motion.div variants={formItemVariants}>
                     <form.Subscribe
-                      selector={
-                        (s) => [s.canSubmit, s.isSubmitting] as const
-                      }
+                      selector={(s) => [s.canSubmit, s.isSubmitting] as const}
                     >
                       {([canSubmit, isSubmitting]) => (
                         <AppSubmitButton
@@ -488,8 +523,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-sm active:scale-[0.98] cursor-pointer"
                   onClick={() => {
-                    const baseUrl =
-                      process.env.NEXT_PUBLIC_API_BASE_URL;
+                    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
                     window.location.href = `${baseUrl}/auth/login/google`;
                   }}
                 >
@@ -527,7 +561,6 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                 <Link
                   href="/register"
                   className="font-semibold underline-offset-4 hover:underline transition-all text-[#4b2875] dark:text-purple-400"
-
                 >
                   Sign up
                 </Link>

@@ -10,7 +10,7 @@ export const academicTermColumns: ColumnDef<IAcademicTerm>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    enableSorting: false,
+    enableSorting: true,
     cell: ({ row }) => (
       <Badge variant="secondary" className="text-sm font-medium">
         {row.original.name}
@@ -20,7 +20,7 @@ export const academicTermColumns: ColumnDef<IAcademicTerm>[] = [
   {
     accessorKey: "createdAt",
     header: "Created",
-    enableSorting: false,
+    enableSorting: true,
     cell: ({ row }) => <DateCell date={row.original.createdAt} />,
   },
   {

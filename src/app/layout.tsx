@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProviders from "@/providers/QueryProvider";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   weight: ["400", "500", "600", "700"],
@@ -36,6 +37,7 @@ export default function RootLayout({
         >
           <QueryProviders>{children}</QueryProviders>
         </ThemeProvider>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

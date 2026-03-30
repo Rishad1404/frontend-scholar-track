@@ -149,19 +149,12 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
           }
         : undefined,
     });
-    return (
-      <div className="relative">
-        {showLoadingOverlay && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <span className="text-sm text-muted-foreground">Loading...</span>
-            </div>
-          </div>
-        )}
 
+    return (
+      <div className="flex flex-col space-y-4">
+        {/* Toolbar Area (Unblurred) */}
         {(search || filters || toolbarAction) && (
-          <div className="mb-4 flex flex-wrap items-start gap-3">
+          <div className="flex flex-wrap items-start gap-3">
             {search && (
               <DataTableSearch
                 key={search.initialValue ?? ""}
@@ -189,8 +182,17 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
           </div>
         )}
 
-        {/* // Table */}
-        <div className="rounded-lg border">
+        {/* Table Area (Blurred when loading) */}
+        <div className="relative rounded-lg border">
+          {showLoadingOverlay && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/50 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <span className="text-sm text-muted-foreground">Loading...</span>
+              </div>
+            </div>
+          )}
+
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
