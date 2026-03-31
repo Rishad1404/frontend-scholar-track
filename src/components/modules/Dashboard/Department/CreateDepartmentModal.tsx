@@ -89,7 +89,7 @@ export default function CreateDepartmentModal({ onSuccess }: Props) {
       </DialogTrigger>
 
       {/* Premium styling: wider max-width, zero default padding, blur, and custom rounded corners */}
-      <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl rounded-3xl">
+      <DialogContent className="sm:max-w-137.5 p-0 overflow-hidden border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl rounded-3xl">
         
         {/* Header Section */}
         <div className="px-6 pt-8 sm:px-8">

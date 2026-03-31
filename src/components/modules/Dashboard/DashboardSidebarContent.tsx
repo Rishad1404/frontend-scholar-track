@@ -145,6 +145,7 @@ const DashboardSidebarContent = ({
                 width={140}
                 height={40}
                 className="h-9 w-auto object-contain dark:brightness-0 dark:invert"
+                style={{ width: "auto" }}
                 priority
               />
             </motion.div>
@@ -194,7 +195,7 @@ const DashboardSidebarContent = ({
                             "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200",
                             isActive
                               ? "" // Active state is handled by inline styles below
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60 dark:hover:bg-muted/20"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60 dark:hover:bg-muted/20",
                           )}
                           style={
                             isActive
@@ -227,7 +228,8 @@ const DashboardSidebarContent = ({
                           <Icon
                             className={cn(
                               "w-4.5 h-4.5 shrink-0 relative z-10 transition-colors duration-200",
-                              !isActive && "text-muted-foreground group-hover:text-foreground"
+                              !isActive &&
+                                "text-muted-foreground group-hover:text-foreground",
                             )}
                           />
                           <span className="relative z-10 flex-1">{item.title}</span>

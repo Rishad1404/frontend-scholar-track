@@ -233,9 +233,9 @@ const MobileSidebar = ({
                     <Image
                       src="/logo.png"
                       alt="ScholarTrack"
-                      width={140}
-                      height={40}
-                      className="h-9 w-auto object-contain"
+                      width={126}
+                      height={36}
+                      className="object-contain"
                       priority
                     />
                   </motion.div>

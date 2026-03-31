@@ -469,6 +469,7 @@ const AdminRegisterForm = () => {
                   width={200}
                   height={80}
                   className="h-14 w-auto object-contain"
+                  style={{ width: "auto" }}
                   priority
                 />
               </motion.div>
@@ -738,7 +739,6 @@ const AdminRegisterForm = () => {
                   <Link
                     href="/login"
                     className="font-semibold underline-offset-4 hover:underline transition-all text-[#4b2875] dark:text-purple-400"
-                    
                   >
                     Log in
                   </Link>

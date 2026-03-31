@@ -1,9 +1,13 @@
-const ReviewersManagementPage = () => {
-  return (
-    <div>
-      <h1>This is ReviewersManagementPage page</h1>
-    </div>
-  );
+// src/app/(dashboardLayout)/(adminRoutes)/admin/reviewers-management/page.tsx
+
+import ReviewerTable from "@/components/modules/Admin/Reviewer/ReviewerTable";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reviewer Management | Scholar Track",
+  description: "Manage committee reviewers",
 };
 
-export default ReviewersManagementPage;
+export default function ReviewerManagementPage() {
+  return <ReviewerTable />;
+}

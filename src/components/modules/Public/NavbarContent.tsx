@@ -14,11 +14,7 @@ import { cn } from "@/lib/utils";
 import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils";
 import { logoutAction } from "@/services/auth.services";
 import { UserInfo } from "@/types/user.types";
-import {
-  motion,
-  useScroll,
-  useMotionValueEvent,
-} from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import {
   ChevronDown,
   ChevronRight,
@@ -112,16 +108,15 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
           /* 1. Increased max-width from max-w-7xl to max-w-[1400px] */
           "pointer-events-auto relative w-[98%] max-w-350 overflow-hidden rounded-full transition-all duration-500",
           isScrolled
-            /* 2. Lowered opacity to bg-background/60 for a more translucent glass effect */
-            ? "border border-border/40 bg-background/60 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-background/40 dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.5)] py-1.5"
-            : "border border-border/20 bg-background/20 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/5 dark:bg-background/20 py-2.5"
+            ? /* 2. Lowered opacity to bg-background/60 for a more translucent glass effect */
+              "border border-border/40 bg-background/60 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-background/40 dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.5)] py-1.5"
+            : "border border-border/20 bg-background/20 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/5 dark:bg-background/20 py-2.5",
         )}
       >
         {/* ═══ 3D Inner Glow / Highlights ═══ */}
         <div className="absolute inset-0 rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),inset_0_-1px_2px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),inset_0_-1px_2px_rgba(0,0,0,0.2)] pointer-events-none" />
 
         <div className="flex h-12 lg:h-14 items-center justify-between px-5 lg:px-8">
-          
           {/* ═══ Left: Logo (Reduced to 20% width to give links more room) ═══ */}
           <div className="flex shrink-0 lg:basis-[20%] justify-start">
             <Link href="/" className="relative z-10">
@@ -136,6 +131,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                   width={160}
                   height={44}
                   className="h-8 w-auto object-contain lg:h-10 dark:brightness-0 dark:invert drop-shadow-sm"
+                  style={{ width: "auto" }}
                   priority
                 />
               </motion.div>
@@ -148,8 +144,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
               {NAV_LINKS.map((link) => {
                 const isActive =
                   pathname === link.href ||
-                  (link.href !== "/" &&
-                    pathname.startsWith(link.href.split("#")[0]));
+                  (link.href !== "/" && pathname.startsWith(link.href.split("#")[0]));
 
                 return (
                   <Link key={link.href} href={link.href}>
@@ -162,7 +157,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                         "group relative inline-flex items-center whitespace-nowrap rounded-full px-3.5 xl:px-4 py-2.5 text-[13.5px] font-semibold tracking-wide transition-all duration-200",
                         isActive
                           ? "text-white"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
                       )}
                     >
                       {/* Active background */}
@@ -197,15 +192,12 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
 
           {/* ═══ Right Section (Reduced to 20% width) ═══ */}
           <div className="flex items-center gap-3 lg:basis-[20%] justify-end">
-            
             {/* ─── Theme Toggle ─── */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() =>
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
+                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
                 className="h-10 w-10 cursor-pointer rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors border border-transparent hover:border-border/50"
                 title="Toggle theme"
               >
@@ -295,7 +287,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                           <span
                             className={cn(
                               "mt-2 inline-block rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
-                              getRoleBadgeClass(userInfo.role)
+                              getRoleBadgeClass(userInfo.role),
                             )}
                           >
                             {userInfo.role.toLowerCase().replace(/_/g, " ")}
@@ -320,9 +312,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                             style={{ color: BRAND.teal }}
                           />
                         </div>
-                        <span className="flex-1 text-sm font-bold">
-                          Go to Dashboard
-                        </span>
+                        <span className="flex-1 text-sm font-bold">Go to Dashboard</span>
                         <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
                       </Link>
                     </DropdownMenuItem>
@@ -339,10 +329,10 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                                 userInfo.role === "SUPER_ADMIN"
                                   ? "super-admin"
                                   : userInfo.role === "UNIVERSITY_ADMIN"
-                                  ? "admin"
-                                  : userInfo.role === "DEPARTMENT_HEAD"
-                                  ? "department-head"
-                                  : "reviewer"
+                                    ? "admin"
+                                    : userInfo.role === "DEPARTMENT_HEAD"
+                                      ? "department-head"
+                                      : "reviewer"
                               }/my-profile`
                         }
                         className="flex items-center gap-3"
@@ -350,9 +340,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
                           <User className="h-4.5 w-4.5 text-muted-foreground" />
                         </div>
-                        <span className="flex-1 text-sm font-bold">
-                          My Profile
-                        </span>
+                        <span className="flex-1 text-sm font-bold">My Profile</span>
                         <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
                       </Link>
                     </DropdownMenuItem>
@@ -390,10 +378,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                 /* ─── Not Logged In ─── */
                 <>
                   <Link href="/login">
-                    <motion.div
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
+                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                       <Button
                         variant="ghost"
                         className="cursor-pointer rounded-full px-5 text-sm font-bold text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
@@ -405,10 +390,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <motion.div
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                      >
+                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                         <Button
                           className="cursor-pointer gap-2 rounded-full px-7 py-5 text-[13.5px] font-bold text-white shadow-md hover:opacity-90 transition-opacity"
                           style={{
@@ -479,10 +461,7 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                               border: `1px solid ${BRAND.purple}20`,
                             }}
                           >
-                            <Shield
-                              className="h-5.5 w-5.5 text-[#4b2875] dark:text-purple-400"
-                              
-                            />
+                            <Shield className="h-5.5 w-5.5 text-[#4b2875] dark:text-purple-400" />
                           </div>
                           <div className="flex-1">
                             <p className="text-sm font-bold text-foreground">

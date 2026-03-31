@@ -8,10 +8,7 @@ import AppOtpField from "@/components/shared/form/AppOtpField";
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  IResetPasswordPayload,
-  resetPasswordFieldSchemas,
-} from "@/zod/auth.validation";
+import { IResetPasswordPayload, resetPasswordFieldSchemas } from "@/zod/auth.validation";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion, easeOut } from "framer-motion";
@@ -162,7 +159,9 @@ export default function ResetPasswordForm({
         setServerError(error instanceof Error ? error.message : "Request failed");
         setShakeKey((prev) => prev + 1);
         // 🚨 Update toast to error
-        toast.error(error instanceof Error ? error.message : "Request failed", { id: toastId });
+        toast.error(error instanceof Error ? error.message : "Request failed", {
+          id: toastId,
+        });
       }
     },
   });
@@ -300,10 +299,10 @@ export default function ResetPasswordForm({
                 <Image
                   src="/logo.png"
                   alt="ScholarTrack"
-                  width={200}
-                  height={80}
-                  className="h-14 w-auto object-contain dark:brightness-0 dark:invert"
-                  priority
+                  width={150}
+                  height={40}
+                  className="h-10 w-auto object-contain"
+                  style={{ width: "auto" }}
                 />
               </motion.div>
 

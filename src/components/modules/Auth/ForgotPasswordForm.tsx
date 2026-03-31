@@ -39,10 +39,34 @@ const panelOrbs = [
 
 const floatingIcons = [
   { Icon: Key, left: "6%", top: "6%", size: 32, duration: 16, delay: 0, rotate: -15 },
-  { Icon: ShieldAlert, left: "76%", top: "10%", size: 36, duration: 19, delay: 2, rotate: 10 },
-  { Icon: LockKeyhole, left: "82%", top: "42%", size: 34, duration: 14, delay: 4, rotate: -8 },
+  {
+    Icon: ShieldAlert,
+    left: "76%",
+    top: "10%",
+    size: 36,
+    duration: 19,
+    delay: 2,
+    rotate: 10,
+  },
+  {
+    Icon: LockKeyhole,
+    left: "82%",
+    top: "42%",
+    size: 34,
+    duration: 14,
+    delay: 4,
+    rotate: -8,
+  },
   { Icon: Mail, left: "10%", top: "40%", size: 28, duration: 18, delay: 1, rotate: 12 },
-  { Icon: ShieldCheck, left: "70%", top: "76%", size: 30, duration: 20, delay: 3, rotate: -20 },
+  {
+    Icon: ShieldCheck,
+    left: "70%",
+    top: "76%",
+    size: 30,
+    duration: 20,
+    delay: 3,
+    rotate: -20,
+  },
   { Icon: Key, left: "18%", top: "82%", size: 26, duration: 15, delay: 5, rotate: 25 },
 ];
 
@@ -204,8 +228,7 @@ const ForgotPasswordForm = () => {
             <div
               className="absolute inset-0 opacity-[0.04]"
               style={{
-                backgroundImage:
-                  "radial-gradient(circle, white 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
               }}
             />
@@ -216,22 +239,14 @@ const ForgotPasswordForm = () => {
               animate="visible"
               className="relative z-10 space-y-8"
             >
-              <motion.div
-                variants={panelItemVariants}
-                className="flex justify-center"
-              >
+              <motion.div variants={panelItemVariants} className="flex justify-center">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 ring-1 ring-white/10">
                   <ShieldCheck className="size-12 text-white" />
                 </div>
               </motion.div>
 
-              <motion.div
-                variants={panelItemVariants}
-                className="text-center space-y-2"
-              >
-                <h2 className="text-2xl font-bold tracking-tight">
-                  Secure Recovery
-                </h2>
+              <motion.div variants={panelItemVariants} className="text-center space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight">Secure Recovery</h2>
                 <p className="text-white/70 text-sm leading-relaxed max-w-65 mx-auto">
                   Follow the steps to safely regain access to your account.
                 </p>
@@ -251,9 +266,7 @@ const ForgotPasswordForm = () => {
                       <p className="text-sm font-semibold leading-tight">
                         {feature.title}
                       </p>
-                      <p className="text-xs text-white/60 mt-0.5">
-                        {feature.desc}
-                      </p>
+                      <p className="text-xs text-white/60 mt-0.5">{feature.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -284,6 +297,7 @@ const ForgotPasswordForm = () => {
                   width={200}
                   height={80}
                   className="h-16 w-auto object-contain"
+                  style={{ width: "auto" }}
                   priority
                 />
               </motion.div>
@@ -307,10 +321,7 @@ const ForgotPasswordForm = () => {
                     background: `linear-gradient(135deg, ${BRAND.teal}15, ${BRAND.purple}15)`,
                   }}
                 >
-                  <LockKeyhole
-                    className="size-8"
-                    style={{ color: BRAND.teal }}
-                  />
+                  <LockKeyhole className="size-8" style={{ color: BRAND.teal }} />
                 </div>
               </motion.div>
 
@@ -321,11 +332,10 @@ const ForgotPasswordForm = () => {
                 transition={{ delay: 0.2, duration: 0.3 }}
                 className="text-center mb-6"
               >
-                <h1 className="text-2xl font-bold tracking-tight">
-                  Forgot Password?
-                </h1>
+                <h1 className="text-2xl font-bold tracking-tight">Forgot Password?</h1>
                 <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">
-                  Enter your registered email address and we&apos;ll send you an OTP to reset your password.
+                  Enter your registered email address and we&apos;ll send you an OTP to
+                  reset your password.
                 </p>
               </motion.div>
 
@@ -420,7 +430,10 @@ const ForgotPasswordForm = () => {
                   href="/login"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground font-medium hover:text-foreground transition-colors group"
                 >
-                  <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" style={{ color: BRAND.teal }} />
+                  <ArrowLeft
+                    className="size-4 transition-transform group-hover:-translate-x-1"
+                    style={{ color: BRAND.teal }}
+                  />
                   Back to login
                 </Link>
               </motion.div>

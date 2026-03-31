@@ -5,34 +5,17 @@ import AppField from "@/components/shared/form/AppField";
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  IRegisterPayload,
-  registerFieldSchemas,
-} from "@/zod/auth.validation";
+import { IRegisterPayload, registerFieldSchemas } from "@/zod/auth.validation";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion, easeOut } from "framer-motion";
-import {
-  Eye,
-  EyeOff,
-  GraduationCap,
-  Sparkles,
-  FileCheck,
-  Bell,
-} from "lucide-react";
+import { Eye, EyeOff, GraduationCap, Sparkles, FileCheck, Bell } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner"; // 🚨 Added Sonner import
 
-import {
-  BookOpen,
-  PenTool,
-  Lightbulb,
-  Target,
-  Pencil,
-  Ruler,
-} from "lucide-react";
+import { BookOpen, PenTool, Lightbulb, Target, Pencil, Ruler } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // ─── Brand ───
@@ -51,13 +34,53 @@ const panelOrbs = [
 
 const floatingIcons = [
   { Icon: PenTool, left: "6%", top: "6%", size: 32, duration: 16, delay: 0, rotate: -15 },
-  { Icon: BookOpen, left: "76%", top: "10%", size: 36, duration: 19, delay: 2, rotate: 10 },
-  { Icon: GraduationCap, left: "82%", top: "42%", size: 34, duration: 14, delay: 4, rotate: -8 },
-  { Icon: Lightbulb, left: "10%", top: "40%", size: 28, duration: 18, delay: 1, rotate: 12 },
-  { Icon: Target, left: "70%", top: "76%", size: 30, duration: 20, delay: 3, rotate: -20 },
+  {
+    Icon: BookOpen,
+    left: "76%",
+    top: "10%",
+    size: 36,
+    duration: 19,
+    delay: 2,
+    rotate: 10,
+  },
+  {
+    Icon: GraduationCap,
+    left: "82%",
+    top: "42%",
+    size: 34,
+    duration: 14,
+    delay: 4,
+    rotate: -8,
+  },
+  {
+    Icon: Lightbulb,
+    left: "10%",
+    top: "40%",
+    size: 28,
+    duration: 18,
+    delay: 1,
+    rotate: 12,
+  },
+  {
+    Icon: Target,
+    left: "70%",
+    top: "76%",
+    size: 30,
+    duration: 20,
+    delay: 3,
+    rotate: -20,
+  },
   { Icon: Pencil, left: "18%", top: "82%", size: 26, duration: 15, delay: 5, rotate: 25 },
   { Icon: Ruler, left: "48%", top: "4%", size: 28, duration: 17, delay: 2.5, rotate: -5 },
-  { Icon: BookOpen, left: "86%", top: "85%", size: 24, duration: 21, delay: 1.5, rotate: 15 },
+  {
+    Icon: BookOpen,
+    left: "86%",
+    top: "85%",
+    size: 24,
+    duration: 21,
+    delay: 1.5,
+    rotate: 15,
+  },
 ];
 
 const features = [
@@ -151,8 +174,7 @@ const StudentRegisterForm = () => {
           toast.error(result?.message || "Registration failed", { id: toastId });
         }
       } catch (error: unknown) {
-        const message =
-          error instanceof Error ? error.message : "Registration failed";
+        const message = error instanceof Error ? error.message : "Registration failed";
         setServerError(message);
         setShakeKey((prev) => prev + 1);
         // 🚨 Added: Show error toast
@@ -161,10 +183,7 @@ const StudentRegisterForm = () => {
     },
   });
 
-  const renderPasswordToggle = (
-    isVisible: boolean,
-    toggle: () => void,
-  ) => (
+  const renderPasswordToggle = (isVisible: boolean, toggle: () => void) => (
     <Button
       type="button"
       onClick={toggle}
@@ -180,15 +199,9 @@ const StudentRegisterForm = () => {
         transition={{ duration: 0.2 }}
       >
         {isVisible ? (
-          <EyeOff
-            className="size-4 text-muted-foreground"
-            aria-hidden="true"
-          />
+          <EyeOff className="size-4 text-muted-foreground" aria-hidden="true" />
         ) : (
-          <Eye
-            className="size-4 text-muted-foreground"
-            aria-hidden="true"
-          />
+          <Eye className="size-4 text-muted-foreground" aria-hidden="true" />
         )}
       </motion.div>
     </Button>
@@ -267,8 +280,7 @@ const StudentRegisterForm = () => {
             <div
               className="absolute inset-0 opacity-[0.04]"
               style={{
-                backgroundImage:
-                  "radial-gradient(circle, white 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
               }}
             />
@@ -280,25 +292,16 @@ const StudentRegisterForm = () => {
               animate="visible"
               className="relative z-10 space-y-8"
             >
-              <motion.div
-                variants={panelItemVariants}
-                className="flex justify-center"
-              >
+              <motion.div variants={panelItemVariants} className="flex justify-center">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 ring-1 ring-white/10">
                   <GraduationCap className="size-12 text-white" />
                 </div>
               </motion.div>
 
-              <motion.div
-                variants={panelItemVariants}
-                className="text-center space-y-2"
-              >
-                <h2 className="text-2xl font-bold tracking-tight">
-                  Start Your Journey
-                </h2>
+              <motion.div variants={panelItemVariants} className="text-center space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight">Start Your Journey</h2>
                 <p className="text-white/70 text-sm leading-relaxed max-w-65 mx-auto">
-                  Create your account and discover scholarships tailored
-                  for you
+                  Create your account and discover scholarships tailored for you
                 </p>
               </motion.div>
 
@@ -316,9 +319,7 @@ const StudentRegisterForm = () => {
                       <p className="text-sm font-semibold leading-tight">
                         {feature.title}
                       </p>
-                      <p className="text-xs text-white/60 mt-0.5">
-                        {feature.desc}
-                      </p>
+                      <p className="text-xs text-white/60 mt-0.5">{feature.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -356,15 +357,14 @@ const StudentRegisterForm = () => {
                   width={200}
                   height={80}
                   className="h-16 w-auto object-contain"
+                  style={{ width: "auto" }}
                   priority
                 />
               </motion.div>
 
               {/* Heading */}
               <div className="text-center lg:text-left mb-6">
-                <h1 className="text-2xl font-bold tracking-tight">
-                  Create Account
-                </h1>
+                <h1 className="text-2xl font-bold tracking-tight">Create Account</h1>
                 <p className="text-sm text-muted-foreground mt-1">
                   Join as a student and explore scholarships
                 </p>
@@ -437,13 +437,10 @@ const StudentRegisterForm = () => {
                           <AppField
                             field={field}
                             label="Password"
-                            type={
-                              showPassword ? "text" : "password"
-                            }
+                            type={showPassword ? "text" : "password"}
                             placeholder="Create a password"
-                            append={renderPasswordToggle(
-                              showPassword,
-                              () => setShowPassword((v) => !v),
+                            append={renderPasswordToggle(showPassword, () =>
+                              setShowPassword((v) => !v),
                             )}
                           />
                         )}
@@ -456,12 +453,9 @@ const StudentRegisterForm = () => {
                         validators={{
                           onChangeListenTo: ["password"],
                           onChange: ({ value, fieldApi }) => {
-                            if (!value)
-                              return "Please confirm your password";
-                            const password =
-                              fieldApi.form.getFieldValue("password");
-                            if (value !== password)
-                              return "Passwords do not match";
+                            if (!value) return "Please confirm your password";
+                            const password = fieldApi.form.getFieldValue("password");
+                            if (value !== password) return "Passwords do not match";
                             return undefined;
                           },
                         }}
@@ -470,16 +464,10 @@ const StudentRegisterForm = () => {
                           <AppField
                             field={field}
                             label="Confirm Password"
-                            type={
-                              showConfirmPassword
-                                ? "text"
-                                : "password"
-                            }
+                            type={showConfirmPassword ? "text" : "password"}
                             placeholder="Confirm your password"
-                            append={renderPasswordToggle(
-                              showConfirmPassword,
-                              () =>
-                                setShowConfirmPassword((v) => !v),
+                            append={renderPasswordToggle(showConfirmPassword, () =>
+                              setShowConfirmPassword((v) => !v),
                             )}
                           />
                         )}
@@ -504,9 +492,7 @@ const StudentRegisterForm = () => {
                         }}
                       >
                         <Alert variant="destructive">
-                          <AlertDescription>
-                            {serverError}
-                          </AlertDescription>
+                          <AlertDescription>{serverError}</AlertDescription>
                         </Alert>
                       </motion.div>
                     )}
@@ -515,10 +501,7 @@ const StudentRegisterForm = () => {
                   {/* Submit */}
                   <motion.div variants={formItemVariants}>
                     <form.Subscribe
-                      selector={
-                        (s) =>
-                          [s.canSubmit, s.isSubmitting] as const
-                      }
+                      selector={(s) => [s.canSubmit, s.isSubmitting] as const}
                     >
                       {([canSubmit, isSubmitting]) => (
                         <AppSubmitButton
@@ -564,8 +547,7 @@ const StudentRegisterForm = () => {
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-sm active:scale-[0.98] cursor-pointer"
                   onClick={() => {
-                    const baseUrl =
-                      process.env.NEXT_PUBLIC_API_BASE_URL;
+                    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
                     window.location.href = `${baseUrl}/auth/login/google`;
                   }}
                 >
@@ -610,7 +592,6 @@ const StudentRegisterForm = () => {
                     <Link
                       href="/register-admin"
                       className="font-semibold underline-offset-4 hover:underline transition-all text-[#4b2875] dark:text-purple-400"
-                      
                     >
                       Register your university →
                     </Link>

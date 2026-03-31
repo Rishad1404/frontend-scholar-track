@@ -394,6 +394,7 @@ const VerifyEmailForm = ({ email: initialEmail }: VerifyEmailFormProps) => {
                   width={200}
                   height={80}
                   className="h-16 w-auto object-contain"
+                  style={{ width: "auto" }}
                   priority
                 />
               </motion.div>
