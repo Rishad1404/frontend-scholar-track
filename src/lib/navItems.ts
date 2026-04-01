@@ -195,7 +195,7 @@ export const committeeReviewerNavItems: NavSection[] = [
     items: [
       {
         title: "Applications",
-        href: "/reviewer/applications",
+        href: "/committee-reviewer/applications",
         icon: "FileSearch",
       },
     ],

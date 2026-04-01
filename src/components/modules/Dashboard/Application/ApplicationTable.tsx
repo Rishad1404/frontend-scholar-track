@@ -20,6 +20,8 @@ import ViewApplicationDialog from "./ViewApplicationDialog";
 import AiEvaluateModal from "./AiEvaluatedModal";
 import DecisionModal from "./DecisionModal";
 
+import { toast } from "sonner";
+
 // UI Components for the Filter
 import {
   Select,
@@ -29,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { createDisbursementAction } from "@/app/(dashboardLayout)/(adminRoutes)/admin/applications-management/_actions";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -74,6 +77,18 @@ export default function ApplicationsTable({
       setDecisionItem(application);
       setIsDecisionModalOpen(true);
     }, 150);
+  };
+
+  const handleCreateDisbursement = async (application: IApplication) => {
+    const toastId = toast.loading("Sending to payout queue...");
+    const res = await createDisbursementAction(application.id);
+
+    if (res.success) {
+      toast.success(res.message, { id: toastId });
+      refetch(); // Instantly update the table
+    } else {
+      toast.error(res.message, { id: toastId });
+    }
   };
 
   // ─── Filter Logic ───
@@ -240,6 +255,7 @@ export default function ApplicationsTable({
         application={viewingItem}
         onAiEvaluate={handleOpenAiModal}
         onMakeDecision={handleOpenDecisionModal}
+        onCreateDisbursement={handleCreateDisbursement}
         onRefresh={() => refetch()}
       />
 

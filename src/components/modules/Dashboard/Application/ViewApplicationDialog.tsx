@@ -5,11 +5,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,7 +25,9 @@ import {
   Hash,
   Target,
   FileCheck2,
-  CreditCard
+  CreditCard,
+  Star,
+  Send,
 } from "lucide-react";
 import type { IApplication, IApplicationDetails } from "@/types/application";
 import {
@@ -37,10 +35,7 @@ import {
   APPLICATION_STATUS_VARIANT,
 } from "@/types/application";
 import { DOCUMENT_TYPE_LABELS } from "@/types/scholarship";
-import {
-  ACADEMIC_STATUS_LABELS,
-  ACADEMIC_STATUS_VARIANT,
-} from "@/types/student";
+import { ACADEMIC_STATUS_LABELS, ACADEMIC_STATUS_VARIANT } from "@/types/student";
 import { getApplicationById } from "@/services/application.services";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
@@ -48,8 +43,10 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   application: IApplication | null;
-  onAiEvaluate: (application: IApplication) => void;
-  onMakeDecision: (application: IApplication) => void;
+  onAiEvaluate?: (application: IApplication) => void;
+  onMakeDecision?: (application: IApplication) => void;
+  onEvaluate?: (application: IApplication) => void;
+  onCreateDisbursement?: (application: IApplication) => void;
   onRefresh: () => void;
 }
 
@@ -68,15 +65,23 @@ const formatJsonKey = (key: string) => {
 const formatJsonValue = (key: string, value: any): React.ReactNode => {
   if (typeof value === "boolean") {
     return value ? (
-      <span className="text-emerald-600 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-md">Yes</span>
+      <span className="text-emerald-600 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-md">
+        Yes
+      </span>
     ) : (
-      <span className="text-rose-500 font-bold bg-rose-500/10 px-2.5 py-0.5 rounded-md">No</span>
+      <span className="text-rose-500 font-bold bg-rose-500/10 px-2.5 py-0.5 rounded-md">
+        No
+      </span>
     );
   }
 
   if (typeof value === "number") {
     const lowerKey = key.toLowerCase();
-    if (lowerKey.includes("amount") || lowerKey.includes("income") || lowerKey.includes("salary")) {
+    if (
+      lowerKey.includes("amount") ||
+      lowerKey.includes("income") ||
+      lowerKey.includes("salary")
+    ) {
       return (
         <span className="font-black text-emerald-600 dark:text-emerald-400">
           ৳{value.toLocaleString()}
@@ -95,6 +100,9 @@ export default function ViewApplicationDialog({
   application,
   onAiEvaluate,
   onMakeDecision,
+  onEvaluate,
+  onCreateDisbursement,
+  onRefresh,
 }: Props) {
   const { data: res, isLoading } = useQuery({
     queryKey: ["application-detail", application?.id],
@@ -106,16 +114,15 @@ export default function ViewApplicationDialog({
 
   if (!application) return null;
 
-// ─── Loading Skeleton (Wide Layout) ───
+  // ─── Loading Skeleton (Wide Layout) ───
   if (isLoading || !detail) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-225 p-0 rounded-[2rem] border-border/40 overflow-hidden">
-          {/* 🚨 FIX: Added VisuallyHidden DialogTitle here for screen-reader accessibility */}
           <VisuallyHidden>
             <DialogTitle>Loading Application Details</DialogTitle>
           </VisuallyHidden>
-          
+
           <div className="border-b border-border/40 bg-muted/10 p-8">
             <Skeleton className="h-8 w-1/3 rounded-xl" />
           </div>
@@ -153,9 +160,14 @@ export default function ViewApplicationDialog({
           <div className="flex items-center gap-4">
             <div
               className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-inner border border-primary/20 bg-card"
-              style={{ background: `linear-gradient(135deg, ${BRAND_PURPLE}15, ${BRAND_TEAL}15)` }}
+              style={{
+                background: `linear-gradient(135deg, ${BRAND_PURPLE}15, ${BRAND_TEAL}15)`,
+              }}
             >
-              <ListChecks className="h-7 w-7 text-primary" style={{ color: BRAND_TEAL }} />
+              <ListChecks
+                className="h-7 w-7 text-primary"
+                style={{ color: BRAND_TEAL }}
+              />
             </div>
             <div>
               <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
@@ -182,7 +194,6 @@ export default function ViewApplicationDialog({
 
         {/* ─── Scrollable Body ─── */}
         <div className="max-h-[75vh] overflow-y-auto overflow-x-hidden custom-scrollbar px-6 py-8 sm:px-10 space-y-8">
-          
           {/* ── Applicant vs Scholarship Split ── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Applicant Profile */}
@@ -196,12 +207,17 @@ export default function ViewApplicationDialog({
 
               <div className="mb-4">
                 <p className="text-xl font-extrabold">{student.user.name}</p>
-                <p className="text-sm font-medium text-muted-foreground">{student.user.email}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {student.user.email}
+                </p>
               </div>
 
               {student.academicInfo ? (
                 <div className="space-y-2">
-                  <InfoRow label="Department" value={student.academicInfo.department.name} />
+                  <InfoRow
+                    label="Department"
+                    value={student.academicInfo.department.name}
+                  />
                   <InfoRow label="Level" value={student.academicInfo.level.name} />
                   <InfoRow
                     label="GPA / CGPA"
@@ -209,18 +225,30 @@ export default function ViewApplicationDialog({
                     valueClass="text-primary font-black"
                   />
                   <div className="flex items-center justify-between rounded-xl border border-border/40 bg-muted/10 p-3">
-                    <span className="text-sm font-medium text-muted-foreground">Account Status</span>
-                    <Badge variant={ACADEMIC_STATUS_VARIANT[student.academicInfo.academicStatus]}>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Account Status
+                    </span>
+                    <Badge
+                      variant={
+                        ACADEMIC_STATUS_VARIANT[student.academicInfo.academicStatus]
+                      }
+                    >
                       {ACADEMIC_STATUS_LABELS[student.academicInfo.academicStatus]}
                     </Badge>
                   </div>
                   {student.academicInfo.studentIdNo && (
-                    <InfoRow label="Student ID" value={student.academicInfo.studentIdNo} valueClass="font-mono" />
+                    <InfoRow
+                      label="Student ID"
+                      value={student.academicInfo.studentIdNo}
+                      valueClass="font-mono"
+                    />
                   )}
                 </div>
               ) : (
                 <div className="h-32 flex items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10">
-                  <p className="text-sm text-muted-foreground italic">No academic profile found.</p>
+                  <p className="text-sm text-muted-foreground italic">
+                    No academic profile found.
+                  </p>
                 </div>
               )}
             </div>
@@ -254,16 +282,25 @@ export default function ViewApplicationDialog({
                   value={format(new Date(scholarship.deadline), "MMM dd, yyyy")}
                 />
 
-                {(scholarship.minGpa || scholarship.minCgpa || scholarship.financialNeedRequired) && (
+                {(scholarship.minGpa ||
+                  scholarship.minCgpa ||
+                  scholarship.financialNeedRequired) && (
                   <div className="pt-2 flex flex-wrap gap-2">
                     {scholarship.minGpa !== null && scholarship.minGpa > 0 && (
-                      <Badge variant="outline">Min GPA: {scholarship.minGpa.toFixed(2)}</Badge>
+                      <Badge variant="outline">
+                        Min GPA: {scholarship.minGpa.toFixed(2)}
+                      </Badge>
                     )}
                     {scholarship.minCgpa !== null && scholarship.minCgpa > 0 && (
-                      <Badge variant="outline">Min CGPA: {scholarship.minCgpa.toFixed(2)}</Badge>
+                      <Badge variant="outline">
+                        Min CGPA: {scholarship.minCgpa.toFixed(2)}
+                      </Badge>
                     )}
                     {scholarship.financialNeedRequired && (
-                      <Badge variant="outline" className="border-amber-500/30 text-amber-600 bg-amber-500/10">
+                      <Badge
+                        variant="outline"
+                        className="border-amber-500/30 text-amber-600 bg-amber-500/10"
+                      >
                         Financial Need Required
                       </Badge>
                     )}
@@ -283,7 +320,10 @@ export default function ViewApplicationDialog({
                     <Bot className="h-6 w-6 text-blue-500" />
                     AI Screening Report
                   </h3>
-                  <Badge variant="outline" className="bg-background/50 backdrop-blur border-blue-500/20 text-blue-600 dark:text-blue-400 px-3 py-1">
+                  <Badge
+                    variant="outline"
+                    className="bg-background/50 backdrop-blur border-blue-500/20 text-blue-600 dark:text-blue-400 px-3 py-1"
+                  >
                     Automated Analysis
                   </Badge>
                 </div>
@@ -293,19 +333,25 @@ export default function ViewApplicationDialog({
                     <span className="text-3xl font-black text-blue-600 dark:text-blue-400">
                       {detail.aiScore?.toFixed(0)}
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">Overall</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                      Overall
+                    </span>
                   </div>
                   <div className="flex flex-col items-center rounded-2xl bg-background border border-border/50 p-4 shadow-sm">
                     <span className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
                       {detail.aiEssayScore?.toFixed(0)}
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">Essay</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                      Essay
+                    </span>
                   </div>
                   <div className="flex flex-col items-center rounded-2xl bg-background border border-border/50 p-4 shadow-sm">
                     <span className="text-3xl font-black">
                       {detail.aiEligible ? "✅" : "❌"}
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">Eligible</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                      Eligible
+                    </span>
                   </div>
                 </div>
 
@@ -315,7 +361,9 @@ export default function ViewApplicationDialog({
                       <p className="font-bold text-foreground mb-2 flex items-center gap-2">
                         <Target className="h-4 w-4 text-blue-500" /> Eligibility Reasoning
                       </p>
-                      <p className="text-muted-foreground leading-relaxed">{detail.aiEligibleReason}</p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {detail.aiEligibleReason}
+                      </p>
                     </div>
                   )}
                   {detail.aiSummary && (
@@ -323,7 +371,9 @@ export default function ViewApplicationDialog({
                       <p className="font-bold text-foreground mb-2 flex items-center gap-2">
                         <FileText className="h-4 w-4 text-indigo-500" /> Applicant Summary
                       </p>
-                      <p className="text-muted-foreground leading-relaxed">{detail.aiSummary}</p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {detail.aiSummary}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -388,9 +438,12 @@ export default function ViewApplicationDialog({
                         <FileText className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                       </div>
                       <div className="min-w-0 flex-1 pr-2">
-                        <p className="text-sm font-bold text-foreground truncate">{doc.fileName}</p>
+                        <p className="text-sm font-bold text-foreground truncate">
+                          {doc.fileName}
+                        </p>
                         <p className="text-xs font-medium text-muted-foreground mt-0.5">
-                          {DOCUMENT_TYPE_LABELS[doc.type]} • {(doc.fileSize / 1024).toFixed(0)} KB
+                          {DOCUMENT_TYPE_LABELS[doc.type]} •{" "}
+                          {(doc.fileSize / 1024).toFixed(0)} KB
                         </p>
                       </div>
                     </div>
@@ -405,7 +458,10 @@ export default function ViewApplicationDialog({
           {(screening || reviews.length > 0) && (
             <div className="space-y-6 pt-4 border-t border-border/50">
               <h3 className="text-lg font-bold text-foreground flex items-center gap-2.5">
-                <ShieldCheck className="h-5 w-5 text-primary" style={{ color: BRAND_PURPLE }} />
+                <ShieldCheck
+                  className="h-5 w-5 text-primary"
+                  style={{ color: BRAND_PURPLE }}
+                />
                 Committee Verdicts
               </h3>
 
@@ -413,8 +469,13 @@ export default function ViewApplicationDialog({
                 {screening && (
                   <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-5">
-                      <h4 className="font-extrabold text-foreground text-base">Initial Screening</h4>
-                      <Badge variant={screening.passed ? "default" : "destructive"} className="px-3 py-1">
+                      <h4 className="font-extrabold text-foreground text-base">
+                        Initial Screening
+                      </h4>
+                      <Badge
+                        variant={screening.passed ? "default" : "destructive"}
+                        className="px-3 py-1"
+                      >
                         {screening.passed ? "Passed" : "Failed"}
                       </Badge>
                     </div>
@@ -446,12 +507,18 @@ export default function ViewApplicationDialog({
                 )}
 
                 {reviews.map((review) => (
-                  <div key={review.id} className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
+                  <div
+                    key={review.id}
+                    className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm"
+                  >
                     <div className="flex items-center justify-between mb-5">
                       <h4 className="font-extrabold text-foreground text-base">
                         {review.reviewer.user.name}
                       </h4>
-                      <Badge variant="outline" className="text-primary font-black border-primary/20 bg-primary/5 px-3 py-1 text-sm">
+                      <Badge
+                        variant="outline"
+                        className="text-primary font-black border-primary/20 bg-primary/5 px-3 py-1 text-sm"
+                      >
                         Total Score: {review.totalScore.toFixed(1)}
                       </Badge>
                     </div>
@@ -466,12 +533,20 @@ export default function ViewApplicationDialog({
                         <span className="font-bold">{review.essayScore.toFixed(1)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground font-medium">Financial</span>{" "}
-                        <span className="font-bold">{review.financialScore.toFixed(1)}</span>
+                        <span className="text-muted-foreground font-medium">
+                          Financial
+                        </span>{" "}
+                        <span className="font-bold">
+                          {review.financialScore.toFixed(1)}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground font-medium">Criteria</span>{" "}
-                        <span className="font-bold">{review.criteriaScore.toFixed(1)}</span>
+                        <span className="text-muted-foreground font-medium">
+                          Criteria
+                        </span>{" "}
+                        <span className="font-bold">
+                          {review.criteriaScore.toFixed(1)}
+                        </span>
                       </div>
                     </div>
 
@@ -481,7 +556,7 @@ export default function ViewApplicationDialog({
                           Reviewer Notes
                         </span>
                         <p className="font-medium text-foreground italic leading-relaxed">
-                        {review.notes}
+                          {review.notes}
                         </p>
                       </div>
                     )}
@@ -493,12 +568,12 @@ export default function ViewApplicationDialog({
         </div>
 
         {/* ─── Footer Actions ─── */}
-        {(canEvaluateAi || canDecide) && (
+        {(onAiEvaluate || onMakeDecision || onEvaluate || onCreateDisbursement) && (
           <div className="border-t border-border/40 bg-muted/10 px-6 py-5 sm:px-10 flex flex-wrap items-center justify-end gap-4">
-            
             {/* AI Evaluation Button */}
-            {canEvaluateAi && (
-              !hasAi ? (
+            {onAiEvaluate &&
+              canEvaluateAi &&
+              (!hasAi ? (
                 <Button
                   onClick={() => onAiEvaluate(application)}
                   className="h-11 rounded-xl px-6 font-bold shadow-sm transition-all hover:bg-muted bg-background text-foreground border border-border/60 hover:text-primary"
@@ -511,38 +586,75 @@ export default function ViewApplicationDialog({
                   onClick={() => onAiEvaluate(application)}
                   className="h-11 rounded-xl px-6 font-bold shadow-sm transition-all hover:bg-muted/50 border-border/60"
                 >
-                  <RotateCcw className="mr-2 h-4 w-4 text-muted-foreground" /> Re-run AI Analysis
+                  <RotateCcw className="mr-2 h-4 w-4 text-muted-foreground" /> Re-run AI
+                  Analysis
                 </Button>
-              )
-            )}
+              ))}
 
             {/* Make Decision Button */}
-            {canDecide && (
+            {onMakeDecision && canDecide && (
               <Button
                 onClick={() => {
                   onOpenChange(false);
                   onMakeDecision(application);
                 }}
                 className="h-11 rounded-xl px-8 font-black text-white shadow-lg transition-all hover:opacity-90 active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})` }}
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})`,
+                }}
               >
                 <Gavel className="mr-2 h-4 w-4" /> Make Decision
               </Button>
             )}
+
+            {/* Evaluate Applicant Button (Reviewer Only) */}
+            {onEvaluate && detail.status === "UNDER_REVIEW" && (
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  onEvaluate(application);
+                }}
+                className="h-11 rounded-xl px-8 font-black text-white shadow-lg transition-all hover:opacity-90 active:scale-95 bg-amber-500 hover:bg-amber-600"
+              >
+                <Star className="mr-2 h-4 w-4 fill-white" /> Evaluate Applicant
+              </Button>
+            )}
+
+            {/* Create Disbursement Button (Admin Only, for APPROVED status) */}
+            {onCreateDisbursement && detail.status === "APPROVED" && (
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  onCreateDisbursement(application);
+                }}
+                className="h-11 rounded-xl px-8 font-black text-white shadow-lg transition-all hover:opacity-90 active:scale-95 bg-emerald-600 hover:bg-emerald-700"
+              >
+                <Send className="mr-2 h-4 w-4" /> Send to Payout Queue
+              </Button>
+            )}
           </div>
         )}
-
       </DialogContent>
     </Dialog>
   );
 }
 
 // ─── Reusable Micro-Components ───
-function InfoRow({ label, value, valueClass = "" }: { label: string; value: string; valueClass?: string }) {
+function InfoRow({
+  label,
+  value,
+  valueClass = "",
+}: {
+  label: string;
+  value: string;
+  valueClass?: string;
+}) {
   return (
     <div className="flex items-center justify-between rounded-xl border border-border/40 bg-muted/10 p-3 shadow-sm transition-colors hover:bg-muted/20">
       <span className="text-sm font-medium text-muted-foreground">{label}</span>
-      <span className={`text-sm font-semibold text-foreground text-right truncate max-w-[60%] ${valueClass}`}>
+      <span
+        className={`text-sm font-semibold text-foreground text-right truncate max-w-[60%] ${valueClass}`}
+      >
         {value}
       </span>
     </div>

@@ -345,7 +345,8 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                   alt="ScholarSync"
                   width={200}
                   height={80}
-                  className="h-16 w-auto object-contain"
+                  style={{ height: "64px", width: "auto" }}
+                  className="object-contain"
                   priority
                 />
               </motion.div>

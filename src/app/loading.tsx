@@ -59,7 +59,7 @@ export default function GlobalLoading() {
               src="/logo.png"
               alt="Scholar Track Loading..."
               fill
-              className="object-contain relative z-10 drop-shadow-sm dark:brightness-0 dark:invert"
+              className="object-contain z-10 drop-shadow-sm dark:brightness-0 dark:invert"
               priority
               sizes="(max-width: 768px) 100vw, 200px"
             />

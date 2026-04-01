@@ -63,7 +63,7 @@ export function ContactFormSection() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  placeholder="John Doe"
+                  placeholder="Your Name"
                   className="w-full rounded-xl border border-gray-200/60 px-4 py-3 text-sm outline-none transition-all focus:border-transparent focus:ring-2 dark:border-gray-700/60 dark:text-white dark:placeholder-gray-500 bg-transparent"
                   style={
                     { "--tw-ring-color": BRAND.teal } as React.CSSProperties
@@ -82,7 +82,7 @@ export function ContactFormSection() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="john@example.com"
+                  placeholder="name@example.com"
                   className="w-full rounded-xl border border-gray-200/60 px-4 py-3 text-sm outline-none transition-all focus:border-transparent focus:ring-2 dark:border-gray-700/60 dark:text-white dark:placeholder-gray-500 bg-transparent"
                   style={
                     { "--tw-ring-color": BRAND.teal } as React.CSSProperties

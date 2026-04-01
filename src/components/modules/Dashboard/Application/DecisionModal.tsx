@@ -7,12 +7,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import {
-  CheckCircle2,
-  XCircle,
-  Bot,
-  ClipboardList,
-} from "lucide-react";
+import { CheckCircle2, XCircle, Bot, ClipboardList } from "lucide-react";
 
 import { makeDecisionAction } from "@/app/(dashboardLayout)/(adminRoutes)/admin/applications-management/_actions";
 import { makeDecisionSchema } from "@/zod/application.validation";
@@ -57,10 +52,8 @@ export default function DecisionModal({
   const qc = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (payload: {
-      decision: "APPROVED" | "REJECTED";
-      remarks?: string;
-    }) => makeDecisionAction(application!.id, payload),
+    mutationFn: (payload: { decision: "APPROVED" | "REJECTED"; remarks?: string }) =>
+      makeDecisionAction(application!.id, payload),
   });
 
   const form = useForm({
@@ -100,8 +93,7 @@ export default function DecisionModal({
           });
         }
       } catch (error: unknown) {
-        const message =
-          error instanceof Error ? error.message : "Something went wrong";
+        const message = error instanceof Error ? error.message : "Something went wrong";
         setServerError(message);
         toast.error(message, { id: toastId });
       }
@@ -147,8 +139,8 @@ export default function DecisionModal({
         {!canDecide ? (
           <div className="px-6 py-8 text-center text-muted-foreground sm:px-8">
             <p>
-              Only <strong className="text-foreground">Under Review</strong> applications can receive a
-              final decision. Current status:{" "}
+              Only <strong className="text-foreground">Under Review</strong> applications
+              can receive a final decision. Current status:{" "}
               <Badge variant={APPLICATION_STATUS_VARIANT[application.status]}>
                 {APPLICATION_STATUS_LABELS[application.status]}
               </Badge>
@@ -178,7 +170,9 @@ export default function DecisionModal({
 
               {/* Application summary */}
               <div className="space-y-3">
-                <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Application Summary</h4>
+                <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                  Application Summary
+                </h4>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="flex items-center justify-between rounded-xl border border-border/40 bg-card p-3.5 shadow-sm transition-colors hover:bg-muted/10">
                     <span className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -211,12 +205,14 @@ export default function DecisionModal({
                   onChange: ({ value }) => {
                     const res = makeDecisionSchema.shape.decision.safeParse(value);
                     return res.success ? undefined : res.error.issues[0].message;
-                  }
+                  },
                 }}
               >
                 {(field) => (
                   <div className="space-y-3">
-                    <Label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Record Decision</Label>
+                    <Label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                      Record Decision
+                    </Label>
                     <div className="grid grid-cols-2 gap-4">
                       {/* Approve */}
                       <button
@@ -298,14 +294,16 @@ export default function DecisionModal({
                   onChange: ({ value }) => {
                     const res = makeDecisionSchema.shape.remarks.safeParse(value);
                     return res.success ? undefined : res.error.issues[0].message;
-                  }
+                  },
                 }}
               >
                 {(field) => (
                   <div className="space-y-2">
                     <Label className="font-semibold text-foreground">
                       Remarks{" "}
-                      <span className="text-muted-foreground font-normal">(optional)</span>
+                      <span className="text-muted-foreground font-normal">
+                        (optional)
+                      </span>
                     </Label>
                     <Textarea
                       value={field.state.value}
@@ -331,28 +329,48 @@ export default function DecisionModal({
               {/* Warnings & Server Errors */}
               <AnimatePresence mode="wait">
                 {selectedDecision === "REJECTED" && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                  <motion.div
+                    key="reject-alert" // 🚨 Added unique key
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
                     <Alert className="border-rose-500/30 bg-rose-500/10 text-rose-600 rounded-xl mt-4">
                       <AlertDescription className="font-semibold text-sm">
-                        This action will permanently reject the application. The student will be notified.
+                        This action will permanently reject the application. The student
+                        will be notified.
                       </AlertDescription>
                     </Alert>
                   </motion.div>
                 )}
 
                 {selectedDecision === "APPROVED" && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                  <motion.div
+                    key="approve-alert" // 🚨 Added unique key
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
                     <Alert className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 rounded-xl mt-4">
                       <AlertDescription className="font-semibold text-sm">
-                        The student will be notified and become eligible for disbursement (৳{application.scholarship.amountPerStudent.toLocaleString()}).
+                        The student will be notified and become eligible for disbursement
+                        (৳{application.scholarship.amountPerStudent.toLocaleString()}).
                       </AlertDescription>
                     </Alert>
                   </motion.div>
                 )}
 
                 {serverError && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                    <Alert variant="destructive" className="border-rose-500/30 bg-rose-500/10 text-rose-600 rounded-xl mt-4">
+                  <motion.div
+                    key="server-error" // 🚨 Added unique key
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <Alert
+                      variant="destructive"
+                      className="border-rose-500/30 bg-rose-500/10 text-rose-600 rounded-xl mt-4"
+                    >
                       <AlertDescription className="font-semibold text-sm">
                         {serverError}
                       </AlertDescription>
@@ -364,33 +382,40 @@ export default function DecisionModal({
 
             {/* Footer */}
             <DialogFooter className="flex items-center justify-end border-t border-border/40 bg-muted/10 px-6 py-5 sm:px-8">
-              <form.Subscribe
-                selector={(s) => [s.canSubmit, s.isSubmitting] as const}
-              >
-                {([canSubmit, isSubmitting]) => (
-                  <AppSubmitButton
-                    isPending={isSubmitting || isPending}
-                    pendingLabel={
-                      selectedDecision === "APPROVED"
-                        ? "Approving..."
-                        : "Rejecting..."
-                    }
-                    disabled={!canSubmit || !selectedDecision}
-                    className="h-12 rounded-xl px-8 font-black text-white shadow-lg transition-all hover:opacity-90 active:scale-95"
-                    style={{
-                      background:
-                        selectedDecision === "REJECTED"
-                          ? "linear-gradient(135deg, #dc2626, #ef4444)"
-                          : `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})`,
-                    }}
-                  >
-                    {selectedDecision === "APPROVED"
-                      ? "Approve Application"
-                      : selectedDecision === "REJECTED"
-                        ? "Reject Application"
-                        : "Make Decision"}
-                  </AppSubmitButton>
-                )}
+              <form.Subscribe selector={(s) => [s.values, s.isSubmitting] as const}>
+                {([values, isSubmitting]) => {
+                  // 🚨 DIRECT CHECK: Is a decision actually selected in the form state?
+                  const hasDecision =
+                    values.decision === "APPROVED" || values.decision === "REJECTED";
+
+                  // 🚨 MANUAL LOCK: Only disable if we are currently loading or if NO decision is made.
+                  const isButtonDisabled = isSubmitting || isPending || !hasDecision;
+
+                  return (
+                    <AppSubmitButton
+                      // Use our simplified loading state
+                      isPending={isSubmitting || isPending}
+                      pendingLabel={
+                        values.decision === "APPROVED" ? "Approving..." : "Rejecting..."
+                      }
+                      // Force it to be clickable if hasDecision is true
+                      disabled={isButtonDisabled}
+                      className="h-12 rounded-xl px-8 font-black text-white shadow-lg transition-all hover:opacity-90 active:scale-95"
+                      style={{
+                        background:
+                          values.decision === "REJECTED"
+                            ? "linear-gradient(135deg, #dc2626, #ef4444)"
+                            : `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})`,
+                      }}
+                    >
+                      {values.decision === "APPROVED"
+                        ? "Approve Application"
+                        : values.decision === "REJECTED"
+                          ? "Reject Application"
+                          : "Make Decision"}
+                    </AppSubmitButton>
+                  );
+                }}
               </form.Subscribe>
             </DialogFooter>
           </form>

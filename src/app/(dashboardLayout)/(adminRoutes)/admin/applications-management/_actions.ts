@@ -3,6 +3,7 @@
 import {
   aiEvaluateApplication,
   aiReEvaluateApplication,
+  createDisbursement,
   makeDecision,
 } from "@/services/application.services";
 
@@ -77,3 +78,26 @@ export async function makeDecisionAction(
     };
   }
 }
+
+export async function createDisbursementAction(
+  applicationId: string,
+): Promise<ActionResult> {
+  try {
+    const res = await createDisbursement(applicationId);
+    return { success: true, message: res.message || "Successfully sent to payout queue!" };
+  } catch (error) {
+    const err = error as {
+      response?: { data?: { message?: string } };
+      message?: string;
+    };
+    return {
+      success: false,
+      message:
+        err?.response?.data?.message ??
+        err?.message ??
+        "Failed to create disbursement",
+    };
+  }
+}
+
+

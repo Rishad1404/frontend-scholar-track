@@ -131,7 +131,7 @@ export const getDefaultDashboardRoute = (role: UserRole) => {
     case "DEPARTMENT_HEAD":
       return "/department-head/dashboard";
     case "COMMITTEE_REVIEWER":
-      return "/reviewer/dashboard";
+      return "/committee-reviewer/dashboard";
     case "STUDENT":
       return "/student/dashboard";
     default:

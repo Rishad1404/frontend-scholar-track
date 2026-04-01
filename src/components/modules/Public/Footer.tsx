@@ -46,12 +46,12 @@ const Footer = () => {
                 alt="ScholarTrack"
                 width={150}
                 height={40}
-                className="h-10 w-auto object-contain"
+                className="object-contain"
               />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-              Empowering students and universities with a seamless scholarship
-              management platform.
+              Empowering students and universities with a seamless scholarship management
+              platform.
             </p>
           </div>
 
@@ -120,9 +120,7 @@ const Footer = () => {
           </p>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 dark:text-gray-500">
-              Built with
-            </span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Built with</span>
             <div
               className="flex h-5 w-5 items-center justify-center rounded"
               style={{

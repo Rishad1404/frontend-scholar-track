@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from "@/lib/axios/httpClient";
 import type {
   IApplicationsListResponse,
@@ -70,5 +71,16 @@ export const makeDecision = async (
     success: boolean;
     message: string;
     data: IMakeDecisionResponse;
+  };
+};
+
+export const createDisbursement = async (
+  applicationId: string,
+): Promise<{ success: boolean; message: string; data: any }> => {
+  const res = await httpClient.post(`/disbursements`, { applicationId });
+  return res as unknown as {
+    success: boolean;
+    message: string;
+    data: any;
   };
 };
