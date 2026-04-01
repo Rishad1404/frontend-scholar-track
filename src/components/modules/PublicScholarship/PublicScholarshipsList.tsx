@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { getPublicScholarships } from "@/app/(commonLayout)/scholarships/_actions";

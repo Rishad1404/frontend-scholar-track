@@ -15,6 +15,17 @@ export type StudentAcademicStatus =
   | "SUSPENDED"
   | "DROPPED_OUT";
 
+
+  export const STATUS_CONFIG: Record<
+  StudentAcademicStatus,
+  { label: string; color: string; bg: string; border: string }
+> = {
+  REGULAR: { label: "Regular", color: "#16a34a", bg: "#16a34a15", border: "#16a34a40" },
+  PROBATION: { label: "Probation", color: "#d97706", bg: "#d9770615", border: "#d9770640" },
+  SUSPENDED: { label: "Suspended", color: "#dc2626", bg: "#dc262615", border: "#dc262640" },
+  DROPPED_OUT: { label: "Dropped Out", color: "#6b7280", bg: "#6b728015", border: "#6b728040" },
+};
+
 export type UserStatus = "ACTIVE" | "DELETED" | "BANNED";
 
 export type ApplicationStatus =

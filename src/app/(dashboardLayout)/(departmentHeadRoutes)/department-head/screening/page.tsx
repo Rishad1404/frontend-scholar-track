@@ -1,9 +1,12 @@
-const ScreeningPage = () => {
+// app/(dashboardLayout)/(deptHeadRoutes)/department-head/screening/page.tsx
+
+import ScreeningPage from "@/components/modules/DepartmentHead/ScreeningPage";
+
+
+export default function DeptHeadScreeningPage() {
   return (
-    <div>
-      <h1>This is ScreeningPage page</h1>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <ScreeningPage />
     </div>
   );
-};
-
-export default ScreeningPage;
+}
