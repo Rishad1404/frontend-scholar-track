@@ -120,18 +120,36 @@ export const forgotPasswordZodSchema = z.object({
 export type IForgotPasswordPayload = z.infer<typeof forgotPasswordZodSchema>;
 
 // ─── Reset Password ───-----------------------------------------------------------------------------
-export const resetPasswordZodSchema = z.object({
-  email: z.email("Invalid email address"),
-  otp: z.string().length(6, "OTP must be exactly 6 digits"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+export const resetPasswordZodSchema = z
+  .object({
+    email: z.email("Invalid email address"),
+    otp: z.string().length(6, "OTP must be exactly 6 digits"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export type IResetPasswordPayload = z.infer<typeof resetPasswordZodSchema>;
 
 export const resetPasswordFieldSchemas = {
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
 };
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters long"),
+    // .regex(
+    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+    //   "Password must contain uppercase, lowercase and a number"
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "New passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type TChangePasswordPayload = z.infer<typeof changePasswordSchema>;
