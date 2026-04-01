@@ -62,7 +62,7 @@ export default function UniversityInfoCard({ university }: Props) {
                 />
               </div>
             ) : (
-              <span className="text-5xl font-extrabold text-muted-foreground uppercase sm:text-6xl bg-clip-text text-transparent bg-gradient-to-br from-muted-foreground to-muted-foreground/50">
+              <span className="text-5xl font-extrabold text-transparent uppercase sm:text-6xl bg-clip-text bg-linear-to-br from-muted-foreground to-muted-foreground/50">
                 {university.name.substring(0, 2)}
               </span>
             )}
