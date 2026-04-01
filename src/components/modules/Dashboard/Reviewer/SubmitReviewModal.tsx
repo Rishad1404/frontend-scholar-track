@@ -4,7 +4,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Star, Save, Info, CheckCircle2 } from "lucide-react";
+import { Star, Info, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,7 +64,7 @@ export default function SubmitReviewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] rounded-[2rem] p-0 overflow-hidden border-border/40 bg-background/95 backdrop-blur-xl">
+      <DialogContent className="sm:max-w-125 rounded-[2rem] p-0 overflow-hidden border-border/40 bg-background/95 backdrop-blur-xl">
         <div className="bg-muted/10 px-8 pt-8 pb-6 border-b border-border/40">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black flex items-center gap-2 text-foreground">
@@ -93,7 +93,7 @@ export default function SubmitReviewModal({
               {(field) => (
                 <Textarea 
                   placeholder="Provide brief reasoning for these scores..." 
-                  className="rounded-xl min-h-[100px] bg-background border-border/60"
+                  className="rounded-xl min-h-25 bg-background border-border/60"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />

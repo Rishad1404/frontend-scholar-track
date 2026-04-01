@@ -47,7 +47,6 @@ export async function processViaStripeAction(
       message: res.data.message || "Stripe transfer initiated successfully",
     };
   } catch (error: any) {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     return {
       success: false,
       message: error?.response?.data?.message || "Stripe transfer failed",

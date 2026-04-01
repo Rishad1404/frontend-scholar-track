@@ -105,7 +105,7 @@ export default function DisbursementsTable({
 
           <div className="flex items-center gap-3">
             <Select value={currentStatusFilter} onValueChange={handleFilterChange}>
-              <SelectTrigger className="w-[180px] h-10 rounded-xl font-semibold">
+              <SelectTrigger className="w-45 h-10 rounded-xl font-semibold">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">

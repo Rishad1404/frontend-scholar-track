@@ -102,7 +102,6 @@ export default function ViewApplicationDialog({
   onMakeDecision,
   onEvaluate,
   onCreateDisbursement,
-  onRefresh,
 }: Props) {
   const { data: res, isLoading } = useQuery({
     queryKey: ["application-detail", application?.id],
