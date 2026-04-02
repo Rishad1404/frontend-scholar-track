@@ -190,7 +190,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
         const message = error instanceof Error ? error.message : "Login failed";
         setServerError(message);
         setShakeKey((prev) => prev + 1);
-        toast.error(message, { id: toastId });
+        toast.error("Server Error Please contact to the support", { id: toastId });
       }
     },
   });

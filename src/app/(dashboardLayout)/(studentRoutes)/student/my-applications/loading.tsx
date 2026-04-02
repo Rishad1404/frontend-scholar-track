@@ -1,3 +1,9 @@
-export default function MyApplicationsLoading(){
-    return <p>Loading...</p>
-}
+const Loading = () => {
+  return (
+    <div className="flex h-[60vh] items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-[#0097b2]" />
+    </div>
+  );
+};
+
+export default Loading;

@@ -1,3 +1,4 @@
+
 export type ScholarshipStatus = "DRAFT" | "ACTIVE" | "PAUSED" | "CLOSED" | "CANCELLED";
 
 export interface IScholarship {
@@ -19,7 +20,7 @@ export interface IScholarship {
   status: ScholarshipStatus;
   createdAt: string;
   updatedAt: string;
-
+  category: string;
   university: { id: string; name: string; logoUrl?: string };
   department: { id: string; name: string } | null;
   level: { id: string; name: string } | null;

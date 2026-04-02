@@ -84,3 +84,83 @@ export const createDisbursement = async (
     data: any;
   };
 };
+
+
+export const createApplication = async (payload: {
+  scholarshipId: string;
+  essay?: string;
+  financialInfo?: Record<string, string>;
+}): Promise<{ success: boolean; data: any; message: string }> => {
+  const res = await httpClient.post(BASE, payload);
+  return res as unknown as { success: boolean; data: any; message: string };
+};
+
+export const updateApplication = async (
+  applicationId: string,
+  payload: {
+    essay?: string;
+    financialInfo?: Record<string, string>;
+  }
+): Promise<{ success: boolean; data: any; message: string }> => {
+  const res = await httpClient.patch(`${BASE}/${applicationId}`, payload);
+  return res as unknown as { success: boolean; data: any; message: string };
+};
+
+export const uploadDocument = async (
+  applicationId: string,
+  formData: FormData
+): Promise<{ success: boolean; data: any; message: string }> => {
+  const res = await httpClient.post(
+    `${BASE}/${applicationId}/documents`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return res as unknown as { success: boolean; data: any; message: string };
+};
+
+export const removeDocument = async (
+  applicationId: string,
+  documentId: string
+): Promise<{ success: boolean; message: string }> => {
+  const res = await httpClient.delete(
+    `${BASE}/${applicationId}/documents/${documentId}`
+  );
+  return res as unknown as { success: boolean; message: string };
+};
+
+export const submitApplication = async (
+  applicationId: string
+): Promise<{ success: boolean; data: any; message: string }> => {
+  const res = await httpClient.patch(`${BASE}/${applicationId}/submit`);
+  return res as unknown as { success: boolean; data: any; message: string };
+};
+
+export const deleteApplication = async (
+  applicationId: string
+): Promise<{ success: boolean; message: string }> => {
+  const res = await httpClient.delete(`${BASE}/${applicationId}`);
+  return res as unknown as { success: boolean; message: string };
+};
+
+export const getMyApplications = async (
+  queryString?: string
+): Promise<{ success: boolean; data: any; meta?: any }> => {
+  const url = queryString ? `${BASE}/my-applications?${queryString}` : `${BASE}/my-applications`;
+  const res = await httpClient.get(url);
+  return res as unknown as { success: boolean; data: any; meta?: any };
+};
+
+
+export const uploadStudentDocument = async (
+  applicationId: string,
+  formData: FormData
+): Promise<{ success: boolean; data: any; message: string }> => {
+  const res = await httpClient.post(
+    `${BASE}/${applicationId}/documents`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return res as unknown as { success: boolean; data: any; message: string };
+};
