@@ -87,6 +87,4 @@ export const studentColumns: ColumnDef<IStudent>[] = [
       );
     },
   },
-  // NOTE: "actions" column removed. 
-  // It is injected automatically by <DataTable actions={tableActions} />
 ];

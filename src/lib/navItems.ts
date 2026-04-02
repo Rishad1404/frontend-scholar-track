@@ -221,6 +221,11 @@ export const studentNavItems: NavSection[] = [
         href: "/student/academic-info",
         icon: "BookOpen",
       },
+      {
+        title: "Complete Profile",
+        href: "/student/complete-profile",
+        icon: "UserCheck",
+      },
     ],
   },
 ];

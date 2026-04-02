@@ -58,3 +58,5 @@ export const deleteScholarship = async (
   const res = await httpClient.delete(`${BASE}/${id}`);
   return res as unknown as { success: boolean; message: string };
 };
+
+

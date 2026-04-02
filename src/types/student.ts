@@ -209,3 +209,31 @@ export interface IStudentsListResponse {
     totalPages: number;
   };
 }
+
+
+export interface IStudentMyProfile {
+  id: string;
+  userId: string;
+  universityId: string | null;
+  gender: Gender | null;
+  dateOfBirth: string | null;
+  bloodGroup: BloodGroup | null;
+  phone: string | null;
+  address: string | null;
+  profilePhoto: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+    emailVerified: boolean;
+  };
+  university: {
+    id: string;
+    name: string;
+    logoUrl?: string;
+  } | null;
+  academicInfo: IStudentAcademicInfo | null;
+}
