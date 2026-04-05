@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/ScholarTrack-0097b2?style=for-the-badge&logo=react&logoColor=white" alt="ScholarTrack Logo" />
+  <img src="https://i.ibb.co.com/3YytxTLh/logo.png" alt="ScholarTrack Logo" />
 </p>
 
 <h1 align="center">ScholarTrack 🎓</h1>
@@ -11,6 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white" alt="Prisma" />
   <img src="https://img.shields.io/badge/Stripe-008CDD?style=flat-square&logo=stripe&logoColor=white" alt="Stripe" />
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
@@ -66,5 +67,5 @@ Make sure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/yourusername/scholartrack.git](https://github.com/yourusername/scholartrack.git)
+git clone https://github.com/Rishad1404/frontend-scholar-track.git
 cd scholartrack
