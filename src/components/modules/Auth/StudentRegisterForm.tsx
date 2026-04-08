@@ -547,7 +547,7 @@ const StudentRegisterForm = () => {
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-sm active:scale-[0.98] cursor-pointer"
                   onClick={() => {
-                    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+                    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
                     window.location.href = `${baseUrl}/auth/login/google`;
                   }}
                 >

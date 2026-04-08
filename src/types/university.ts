@@ -64,3 +64,58 @@ export interface IUniversityListResponse {
     totalPages: number;
   };
 }
+
+
+export interface IUniversityDetail extends Omit<IUniversity, "admins" | "departments"> {
+  admins: {
+    id: string;
+    name: string;
+    email: string;
+    isOwner: boolean;
+    subscriptionStatus: string;
+    profilePhoto: string | null;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      image: string | null;
+    };
+  }[];
+  departments: { id: string; name: string }[];
+}
+
+export const UNIVERSITY_STATUS_LABELS: Record<UniversityStatus, string> = {
+  PENDING: "Pending",
+  APPROVED: "Approved",
+  SUSPENDED: "Suspended",
+};
+
+export const UNIVERSITY_STATUS_VARIANT: Record<
+  UniversityStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  PENDING: "outline",
+  APPROVED: "default",
+  SUSPENDED: "destructive",
+};
+
+export const UNIVERSITY_STATUS_COLORS: Record<UniversityStatus, string> = {
+  PENDING: "#f59e0b",
+  APPROVED: "#16a34a",
+  SUSPENDED: "#dc2626",
+};
+
+export const VALID_UNIVERSITY_STATUS_TRANSITIONS: Record<
+  UniversityStatus,
+  UniversityStatus[]
+> = {
+  PENDING: ["APPROVED"],          
+  APPROVED: ["SUSPENDED"],           
+  SUSPENDED: ["APPROVED"],          
+};
+
+export interface IUniversityDetailResponse {
+  success: boolean;
+  message: string;
+  data: IUniversityDetail;
+}

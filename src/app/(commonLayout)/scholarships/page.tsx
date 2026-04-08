@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { getPublicScholarships } from "./_actions";
 import PublicScholarshipsList from "@/components/modules/PublicScholarship/PublicScholarshipsList";

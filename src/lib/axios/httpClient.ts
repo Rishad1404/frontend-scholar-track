@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { ApiResponse } from "@/types/api.types";
 import { isTokenExpiringSoon } from "../tokenUtils";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-if (!API_BASE_URL) {
-  throw new Error("API_BASE_URL is not defined");
-}
+// 1. SMART URL: Full URL for Server, Proxy URL for Browser
+const isServer = typeof window === "undefined";
+const API_BASE_URL = isServer
+  ? "https://backend-scholar-track.vercel.app/api/v1"
+  : "/api/v1";
 
 /**
  * Try to refresh tokens by calling the backend refresh endpoint.
@@ -29,14 +30,11 @@ async function tryRefreshToken(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // send the refreshToken in the Cookie header as some backends expect
         Cookie: `refreshToken=${refreshToken}`,
       },
     });
 
-    if (!res.ok) {
-      return null;
-    }
+    if (!res.ok) return null;
 
     const json = await res.json();
     const data = json?.data ?? json;
@@ -54,83 +52,78 @@ async function tryRefreshToken(
 
 /**
  * Create an axios instance appropriate to the runtime.
- * - On the server we need to read cookies() and inject Cookie header so
- *   the backend receives authentication.
- * - On the client (browser) we rely on the browser to send auth cookies and
- *   set withCredentials: true so cross-site cookies are included when needed.
  */
 const axiosInstance = async () => {
-  // If window is undefined => server-side
-  if (typeof window === "undefined") {
-    // server
-    const headersMod = await import("next/headers");
-    const cookieStore = await headersMod.cookies();
+  if (isServer) {
+    try {
+      // 2. CRASH-PROOF SERVER COOKIES: Wrapped in try/catch to prevent Next.js render errors
+      const headersMod = await import("next/headers");
+      const cookieStore = await headersMod.cookies();
 
-    const accessToken = cookieStore.get("accessToken")?.value;
-    const refreshToken = cookieStore.get("refreshToken")?.value;
+      const accessToken = cookieStore.get("accessToken")?.value;
+      const refreshToken = cookieStore.get("refreshToken")?.value;
 
-    let refreshedTokens = null;
-    if (accessToken && refreshToken) {
-      refreshedTokens = await tryRefreshToken(accessToken, refreshToken);
+      let refreshedTokens = null;
+      if (accessToken && refreshToken) {
+        refreshedTokens = await tryRefreshToken(accessToken, refreshToken);
+      }
+
+      const cookieHeader = cookieStore
+        .getAll()
+        .map((cookie: any) => {
+          if (refreshedTokens) {
+            if (cookie.name === "accessToken" && refreshedTokens.accessToken) {
+              return `accessToken=${refreshedTokens.accessToken}`;
+            }
+            if (cookie.name === "refreshToken" && refreshedTokens.refreshToken) {
+              return `refreshToken=${refreshedTokens.refreshToken}`;
+            }
+            if (
+              (cookie.name === "better-auth.session_token" ||
+                cookie.name === "__Secure-better-auth.session_token") &&
+              refreshedTokens.sessionToken
+            ) {
+              return `better-auth.session_token=${refreshedTokens.sessionToken}`;
+            }
+          }
+          return `${cookie.name}=${cookie.value}`;
+        })
+        .join("; ");
+
+      const serverHeaders: Record<string, string> = {
+        "Content-Type": "application/json",
+        Cookie: cookieHeader,
+      };
+
+      if (refreshedTokens?.accessToken) {
+        serverHeaders["Authorization"] = `Bearer ${refreshedTokens.accessToken}`;
+      } else if (accessToken) {
+        serverHeaders["Authorization"] = `Bearer ${accessToken}`;
+      }
+
+      return axios.create({
+        baseURL: API_BASE_URL,
+        timeout: 30000,
+        headers: serverHeaders,
+      });
+    } catch (e) {
+      // Fallback for Next.js static rendering phase
+      return axios.create({
+        baseURL: API_BASE_URL,
+        timeout: 30000,
+      });
     }
-
-    // Build Cookie header by taking existing cookies and overriding any
-    // token values with refreshed ones when available.
-    const cookieHeader = cookieStore
-      .getAll()
-      .map((cookie: any) => {
-        if (refreshedTokens) {
-          if (cookie.name === "accessToken" && refreshedTokens.accessToken) {
-            return `accessToken=${refreshedTokens.accessToken}`;
-          }
-          if (cookie.name === "refreshToken" && refreshedTokens.refreshToken) {
-            return `refreshToken=${refreshedTokens.refreshToken}`;
-          }
-          if (
-            cookie.name === "better-auth.session_token" &&
-            refreshedTokens.sessionToken
-          ) {
-            return `better-auth.session_token=${refreshedTokens.sessionToken}`;
-          }
-        }
-
-        return `${cookie.name}=${cookie.value}`;
-      })
-      .join("; ");
-
-    const serverHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-      Cookie: cookieHeader,
-    };
-
-    // Attach Authorization header from refreshed token (or existing token)
-    if (refreshedTokens?.accessToken) {
-      serverHeaders["Authorization"] = `Bearer ${refreshedTokens.accessToken}`;
-    } else if (accessToken) {
-      serverHeaders["Authorization"] = `Bearer ${accessToken}`;
-    }
-
-    const instance = axios.create({
-      baseURL: API_BASE_URL,
-      timeout: 30000,
-      headers: serverHeaders,
-    });
-
-    return instance;
   }
 
-  // client (browser)
-  const instance = axios.create({
-    baseURL: API_BASE_URL,
+  // 3. CLIENT (BROWSER) LOGIC
+  return axios.create({
+    baseURL: API_BASE_URL, // This resolves to "/api/v1"
     timeout: 30000,
     headers: {
       "Content-Type": "application/json",
     },
-    // allow browser to include cookies for auth (if API is same-site or CORS allows)
-    withCredentials: true,
+    withCredentials: true, // Tells Chrome to send cookies to the proxy
   });
-
-  return instance;
 };
 
 export interface ApiRequestOptions {
@@ -138,10 +131,7 @@ export interface ApiRequestOptions {
   headers?: Record<string, string>;
 }
 
-const httpGet = async <TData>(
-  endpoint: string,
-  options?: ApiRequestOptions,
-): Promise<ApiResponse<TData>> => {
+const httpGet = async <TData>(endpoint: string, options?: ApiRequestOptions): Promise<ApiResponse<TData>> => {
   try {
     const instance = await axiosInstance();
     const response = await instance.get<ApiResponse<TData>>(endpoint, {
@@ -155,11 +145,7 @@ const httpGet = async <TData>(
   }
 };
 
-const httpPost = async <TData>(
-  endpoint: string,
-  data?: unknown,
-  options?: ApiRequestOptions,
-): Promise<ApiResponse<TData>> => {
+const httpPost = async <TData>(endpoint: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<TData>> => {
   try {
     const instance = await axiosInstance();
     const response = await instance.post<ApiResponse<TData>>(endpoint, data, {
@@ -173,11 +159,7 @@ const httpPost = async <TData>(
   }
 };
 
-const httpPut = async <TData>(
-  endpoint: string,
-  data?: unknown,
-  options?: ApiRequestOptions,
-): Promise<ApiResponse<TData>> => {
+const httpPut = async <TData>(endpoint: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<TData>> => {
   try {
     const instance = await axiosInstance();
     const response = await instance.put<ApiResponse<TData>>(endpoint, data, {
@@ -191,11 +173,7 @@ const httpPut = async <TData>(
   }
 };
 
-const httpPatch = async <TData>(
-  endpoint: string,
-  data?: unknown,
-  options?: ApiRequestOptions,
-): Promise<ApiResponse<TData>> => {
+const httpPatch = async <TData>(endpoint: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<TData>> => {
   try {
     const instance = await axiosInstance();
     const response = await instance.patch<ApiResponse<TData>>(endpoint, data, {
@@ -209,10 +187,7 @@ const httpPatch = async <TData>(
   }
 };
 
-const httpDelete = async <TData>(
-  endpoint: string,
-  options?: ApiRequestOptions,
-): Promise<ApiResponse<TData>> => {
+const httpDelete = async <TData>(endpoint: string, options?: ApiRequestOptions): Promise<ApiResponse<TData>> => {
   try {
     const instance = await axiosInstance();
     const response = await instance.delete<ApiResponse<TData>>(endpoint, {

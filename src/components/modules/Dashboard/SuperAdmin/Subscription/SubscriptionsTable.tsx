@@ -10,7 +10,6 @@ import {
   DollarSign,
   CheckCircle2,
   Clock,
-  XCircle,
   TrendingUp,
 } from "lucide-react";
 

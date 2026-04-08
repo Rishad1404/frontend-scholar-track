@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import ReviewerDashboardContent from "@/components/modules/Dashboard/ReviewerDashboardContent";
 import { getDashboardData } from "@/services/dashboard.services";

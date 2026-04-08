@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { handleStripeReturn } from "../_actions";
 import { CheckCircle2, XCircle, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { RunActionOnMount } from "./RunActionOnMount"; // ✅ Import the new client wrapper
 
 async function SuccessContent({
   searchParams,
@@ -11,12 +11,12 @@ async function SuccessContent({
   searchParams: any;
 }) {
   const isSuccess = searchParams.success === "true";
-  
-  // Await the action to clear the cache, but it won't redirect us anymore!
-  await handleStripeReturn(searchParams.session_id, isSuccess);
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center px-4">
+      {/* ✅ This runs the action safely on the client without crashing the server! */}
+      <RunActionOnMount sessionId={searchParams.session_id} isSuccess={isSuccess} />
+
       {isSuccess ? (
         <>
           <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/10">

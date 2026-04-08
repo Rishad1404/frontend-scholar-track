@@ -1,9 +1,17 @@
-const ScholarshipDetailsPage = () => {
-  return (
-    <div>
-      <h1>This is ScholarshipDetailsPage page</h1>
-    </div>
-  );
+// src/app/(commonLayout)/scholarships/[id]/page.tsx
+
+import ScholarshipDetail from "@/components/modules/PublicScholarship/ScholarshipDetail";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Scholarship Details | ScholarTrack",
 };
 
-export default ScholarshipDetailsPage;
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default async function ScholarshipDetailPage({ params }: Props) {
+  const { id } = await params;
+  return <ScholarshipDetail scholarshipId={id} />;
+}

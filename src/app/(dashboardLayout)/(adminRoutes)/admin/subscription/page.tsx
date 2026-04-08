@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/(dashboardLayout)/(adminRoutes)/admin/subscription/page.tsx
 import {

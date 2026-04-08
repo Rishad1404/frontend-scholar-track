@@ -22,13 +22,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
 import { Badge } from "@/components/ui/badge";
 import { getMyProfile, updateMyProfile } from "@/services/superAdmin.services";
+import Image from "next/image";
 
 const BRAND_TEAL = "#0097b2";
 const BRAND_PURPLE = "#4b2875";
 
 export default function SuperAdminProfile() {
   // ── Fetch Profile ──
-  const { data: response, isLoading, refetch } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["my-profile"],
     queryFn: () => getMyProfile(),
   });
@@ -77,7 +82,7 @@ export default function SuperAdminProfile() {
           }}
         >
           {/* Subtle overlay pattern */}
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent" />
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-white to-transparent" />
         </div>
 
         <div className="relative pt-24 px-8 pb-8 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
@@ -86,7 +91,15 @@ export default function SuperAdminProfile() {
             <div className="h-32 w-32 rounded-3xl bg-background p-1.5 shadow-2xl relative z-10">
               <div className="h-full w-full rounded-2xl bg-muted/30 flex items-center justify-center overflow-hidden relative">
                 {user?.image ? (
-                  <img src={user.image} alt="Profile" className="h-full w-full object-cover" />
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={user.image}
+                      alt="Profile"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 200px"
+                      className="object-cover"
+                    />
+                  </div>
                 ) : (
                   <Crown className="h-12 w-12 text-muted-foreground opacity-50" />
                 )}
@@ -99,7 +112,10 @@ export default function SuperAdminProfile() {
             {/* Super Admin Badge Overlapping Avatar */}
             <div className="absolute -bottom-3 -right-3 z-20">
               <div className="flex items-center justify-center h-10 w-10 rounded-full bg-background shadow-lg p-1">
-                <div className="h-full w-full rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, #f59e0b, #fbbf24)` }}>
+                <div
+                  className="h-full w-full rounded-full flex items-center justify-center"
+                  style={{ background: `linear-gradient(135deg, #f59e0b, #fbbf24)` }}
+                >
                   <ShieldCheck className="h-4 w-4 text-white" />
                 </div>
               </div>
@@ -132,7 +148,9 @@ export default function SuperAdminProfile() {
             </div>
             <div>
               <h2 className="text-xl font-extrabold text-foreground">Identity Details</h2>
-              <p className="text-sm font-medium text-muted-foreground">Manage your personal information.</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Manage your personal information.
+              </p>
             </div>
           </div>
 
@@ -161,7 +179,10 @@ export default function SuperAdminProfile() {
 
               <div className="space-y-2 opacity-70">
                 <Label className="font-bold text-foreground flex items-center justify-between">
-                  Email Address <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-md">Locked</span>
+                  Email Address{" "}
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                    Locked
+                  </span>
                 </Label>
                 <Input
                   value={user?.email || ""}
@@ -196,7 +217,9 @@ export default function SuperAdminProfile() {
                     pendingLabel="Saving..."
                     disabled={!canSubmit}
                     className="h-12 px-8 rounded-xl font-bold text-white shadow-lg transition-all hover:-translate-y-0.5"
-                    style={{ background: `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${BRAND_PURPLE}, ${BRAND_TEAL})`,
+                    }}
                   >
                     <CheckCircle2 className="h-4 w-4 mr-2" />
                     Save Changes

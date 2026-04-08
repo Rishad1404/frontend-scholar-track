@@ -184,7 +184,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
           error?.message?.includes("NEXT_REDIRECT")
         ) {
           toast.success("Login successful! Welcome back.", { id: toastId });
-          throw error; // Re-throw so Next.js can actually execute the route change
+          throw error;
         }
 
         const message = error instanceof Error ? error.message : "Login failed";

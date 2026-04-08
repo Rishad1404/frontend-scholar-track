@@ -53,66 +53,18 @@ interface NotificationConfig {
 }
 
 const NOTIFICATION_CONFIG: Record<NotificationType, NotificationConfig> = {
-  APPLICATION_SUBMITTED: {
-    icon: FileText,
-    color: "#0097b2",
-    bgColor: "#0097b215",
-  },
-  APPLICATION_SCREENING_PASSED: {
-    icon: ClipboardCheck,
-    color: "#22c55e",
-    bgColor: "#22c55e15",
-  },
-  APPLICATION_SCREENING_REJECTED: {
-    icon: XCircle,
-    color: "#ef4444",
-    bgColor: "#ef444415",
-  },
-  APPLICATION_UNDER_REVIEW: {
-    icon: Eye,
-    color: "#f59e0b",
-    bgColor: "#f59e0b15",
-  },
-  APPLICATION_APPROVED: {
-    icon: ThumbsUp,
-    color: "#22c55e",
-    bgColor: "#22c55e15",
-  },
-  APPLICATION_REJECTED: {
-    icon: ThumbsDown,
-    color: "#ef4444",
-    bgColor: "#ef444415",
-  },
-  DISBURSEMENT_PROCESSED: {
-    icon: Banknote,
-    color: "#10b981",
-    bgColor: "#10b98115",
-  },
-  SCHOLARSHIP_PUBLISHED: {
-    icon: Sparkles,
-    color: "#8b5cf6",
-    bgColor: "#8b5cf615",
-  },
-  INVITE_RECEIVED: {
-    icon: Mail,
-    color: "#0097b2",
-    bgColor: "#0097b215",
-  },
-  UNIVERSITY_APPROVED: {
-    icon: Building2,
-    color: "#22c55e",
-    bgColor: "#22c55e15",
-  },
-  UNIVERSITY_SUSPENDED: {
-    icon: ShieldAlert,
-    color: "#ef4444",
-    bgColor: "#ef444415",
-  },
-  SYSTEM_ANNOUNCEMENT: {
-    icon: Megaphone,
-    color: "#4b2875",
-    bgColor: "#4b287515",
-  },
+  APPLICATION_SUBMITTED: { icon: FileText, color: "#0097b2", bgColor: "#0097b215" },
+  APPLICATION_SCREENING_PASSED: { icon: ClipboardCheck, color: "#22c55e", bgColor: "#22c55e15" },
+  APPLICATION_SCREENING_REJECTED: { icon: XCircle, color: "#ef4444", bgColor: "#ef444415" },
+  APPLICATION_UNDER_REVIEW: { icon: Eye, color: "#f59e0b", bgColor: "#f59e0b15" },
+  APPLICATION_APPROVED: { icon: ThumbsUp, color: "#22c55e", bgColor: "#22c55e15" },
+  APPLICATION_REJECTED: { icon: ThumbsDown, color: "#ef4444", bgColor: "#ef444415" },
+  DISBURSEMENT_PROCESSED: { icon: Banknote, color: "#10b981", bgColor: "#10b98115" },
+  SCHOLARSHIP_PUBLISHED: { icon: Sparkles, color: "#8b5cf6", bgColor: "#8b5cf615" },
+  INVITE_RECEIVED: { icon: Mail, color: "#0097b2", bgColor: "#0097b215" },
+  UNIVERSITY_APPROVED: { icon: Building2, color: "#22c55e", bgColor: "#22c55e15" },
+  UNIVERSITY_SUSPENDED: { icon: ShieldAlert, color: "#ef4444", bgColor: "#ef444415" },
+  SYSTEM_ANNOUNCEMENT: { icon: Megaphone, color: "#4b2875", bgColor: "#4b287515" },
 };
 
 // ─── Time Ago Helper ───
@@ -164,8 +116,7 @@ const NotificationPopover = () => {
   const [markingId, setMarkingId] = useState<string | null>(null);
   const router = useRouter();
 
-  const { unreadCount, decrementUnreadCount, resetUnreadCount } =
-    useNotifications();
+  const { unreadCount, decrementUnreadCount, resetUnreadCount } = useNotifications();
 
   const fetchNotifications = useCallback(async () => {
     setIsLoading(true);
@@ -283,10 +234,9 @@ const NotificationPopover = () => {
       <PopoverContent
         align="end"
         sideOffset={12}
-        className="w-97.5 rounded-xl border p-0 shadow-xl"
+        className="w-90 sm:w-100 flex flex-col rounded-xl border p-0 shadow-xl overflow-hidden bg-popover"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="shrink-0 z-10 flex items-center justify-between px-4 py-3 bg-popover">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold">Notifications</h3>
             <AnimatePresence>
@@ -324,10 +274,9 @@ const NotificationPopover = () => {
           )}
         </div>
 
-        <Separator />
+        <Separator className="shrink-0 z-10" />
 
-        {/* Notification List */}
-        <ScrollArea className="max-h-110">
+        <ScrollArea className="flex-1 min-h-0 max-h-[60vh] sm:max-h-100">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <motion.div
@@ -414,7 +363,7 @@ const NotificationPopover = () => {
                                 <motion.div
                                   initial={{ scale: 0 }}
                                   animate={{ scale: 1 }}
-                                  className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                                  className="mt-1 h-2 w-2 shrink-0 rounded-full"
                                   style={{
                                     background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
                                   }}
@@ -422,61 +371,46 @@ const NotificationPopover = () => {
                               )}
                             </div>
 
-                            <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                               {notification.message}
                             </p>
 
-                            <div className="mt-1.5 flex items-center gap-2">
-                              <span className="text-[10px] text-muted-foreground/60">
+                            <div className="mt-2 flex items-center justify-between">
+                              <span className="text-[10px] text-muted-foreground/60 font-medium">
                                 {timeAgo(notification.createdAt)}
                               </span>
 
-                              {!notification.isRead && (
-                                <span
-                                  className="rounded-full px-1.5 py-px text-[9px] font-medium"
-                                  style={{
-                                    background: config.bgColor,
-                                    color: config.color,
-                                  }}
-                                >
-                                  New
-                                </span>
-                              )}
-                            </div>
+                              <div className="flex items-center gap-1.5">
+                                {!notification.isRead && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={isMarkingThis}
+                                    onClick={() => handleMarkSingleAsRead(notification)}
+                                    className="h-6 cursor-pointer rounded-md px-2 text-[10px]"
+                                  >
+                                    {isMarkingThis ? (
+                                      <Loader2 className="mr-1 h-2.5 w-2.5 animate-spin" />
+                                    ) : (
+                                      <Check className="mr-1 h-2.5 w-2.5" />
+                                    )}
+                                    Mark read
+                                  </Button>
+                                )}
 
-                            {/* Action Buttons */}
-                            <div className="mt-3 flex items-center gap-2">
-                              {!notification.isRead && (
                                 <Button
                                   type="button"
-                                  variant="outline"
+                                  variant="ghost"
                                   size="sm"
-                                  disabled={isMarkingThis}
-                                  onClick={() =>
-                                    handleMarkSingleAsRead(notification)
-                                  }
-                                  className="h-7 cursor-pointer rounded-lg px-2.5 text-xs"
+                                  onClick={() => handleViewDetails(notification)}
+                                  className="h-6 cursor-pointer rounded-md px-2 text-[10px]"
+                                  style={{ color: BRAND.teal }}
                                 >
-                                  {isMarkingThis ? (
-                                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                                  ) : (
-                                    <Check className="mr-1 h-3 w-3" />
-                                  )}
-                                  Mark as read
+                                  View
+                                  <ChevronRight className="ml-0.5 h-3 w-3" />
                                 </Button>
-                              )}
-
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleViewDetails(notification)}
-                                className="h-7 cursor-pointer rounded-lg px-2.5 text-xs"
-                                style={{ color: BRAND.teal }}
-                              >
-                                View details
-                                <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                              </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -489,24 +423,20 @@ const NotificationPopover = () => {
           )}
         </ScrollArea>
 
-        {/* Footer */}
         {safeNotifications.length > 0 && (
-          <>
-            <Separator />
-            <div className="p-2">
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  router.push("/notifications");
-                }}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/50"
-                style={{ color: BRAND.teal }}
-              >
-                <span>View All Notifications</span>
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </>
+          <div className="shrink-0 z-10 mt-auto border-t bg-muted/20 p-2">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                router.push("/notifications");
+              }}
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted/50"
+              style={{ color: BRAND.teal }}
+            >
+              <span>View All Notifications</span>
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         )}
       </PopoverContent>
     </Popover>

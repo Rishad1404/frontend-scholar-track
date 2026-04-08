@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 
-const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 interface NotificationContextType {
   unreadCount: number;

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from "@/lib/axios/httpClient";
 
-// ─── Profile Endpoints ───
-// (Adjust these base URLs if your backend uses "/profile" instead of "/users/me")
+
 const PROFILE_BASE = "/users/me"; 
 const AUTH_BASE = "/auth/change-password";
 

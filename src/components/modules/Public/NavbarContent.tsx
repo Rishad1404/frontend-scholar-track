@@ -98,6 +98,9 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
     ? getDefaultDashboardRoute(userInfo.role as UserRole)
     : "/login";
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const profileImg = (userInfo as any)?.profilePhoto || (userInfo as any)?.image;
+
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 lg:pt-6 pointer-events-none">
       <motion.header
@@ -239,16 +242,27 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                       className="flex cursor-pointer items-center gap-3 rounded-full border border-border/40 bg-background/40 pl-2 pr-3 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 hover:border-border hover:bg-muted/50 hover:shadow-md"
                     >
                       <div className="relative">
-                        <div
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]"
-                          style={{
-                            background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
-                          }}
-                        >
-                          <span className="text-[12px] font-bold">
-                            {userInfo.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
+                        {profileImg ? (
+                          <Image
+                            src={profileImg}
+                            alt="Profile"
+                            width={32}
+                            height={32}
+                            unoptimized
+                            className="h-8 w-8 rounded-full object-cover shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                          />
+                        ) : (
+                          <div
+                            className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                            style={{
+                              background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                            }}
+                          >
+                            <span className="text-[12px] font-bold">
+                              {userInfo.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                         <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-emerald-500" />
                       </div>
 
@@ -267,16 +281,27 @@ const NavbarContent = ({ userInfo }: NavbarContentProps) => {
                   >
                     <DropdownMenuLabel className="px-3 py-4">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-md"
-                          style={{
-                            background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
-                          }}
-                        >
-                          <span className="text-lg font-bold">
-                            {userInfo.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
+                        {profileImg ? (
+                          <Image
+                            src={profileImg}
+                            alt="Profile"
+                            width={48}
+                            height={48}
+                            unoptimized
+                            className="h-12 w-12 shrink-0 rounded-full object-cover shadow-md"
+                          />
+                        ) : (
+                          <div
+                            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-md"
+                            style={{
+                              background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                            }}
+                          >
+                            <span className="text-lg font-bold">
+                              {userInfo.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-bold text-foreground">
                             {userInfo.name}

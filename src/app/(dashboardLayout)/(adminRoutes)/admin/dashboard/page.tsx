@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import AdminDashboardContent from "@/components/modules/Dashboard/AdminDashboardContent";
 import { getAdminDashboardData } from "@/services/dashboard.services";

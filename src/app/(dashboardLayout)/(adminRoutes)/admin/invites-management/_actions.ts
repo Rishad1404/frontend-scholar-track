@@ -4,7 +4,7 @@
 import { getCookie } from "@/lib/cookieUtils";
 import { IDepartment } from "@/types/invites.types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export async function fetchUniversityId(): Promise<string | undefined> {
   const token =

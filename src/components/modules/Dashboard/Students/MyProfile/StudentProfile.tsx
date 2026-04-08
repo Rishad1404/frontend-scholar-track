@@ -1,4 +1,4 @@
-// components/modules/Student/MyProfile/StudentProfile.tsx
+/* eslint-disable react-hooks/purity */
 
 "use client";
 
@@ -126,10 +126,10 @@ export default function StudentProfile() {
         }
 
         toast.success("Profile updated successfully");
+        refetch();
         setPhotoFile(null);
         setPhotoPreview(null);
         setIsEditing(false);
-        refetch();
       } catch (error: unknown) {
         setServerError(error instanceof Error ? error.message : "Something went wrong");
       }
@@ -211,7 +211,10 @@ export default function StudentProfile() {
     );
   }
 
-  const avatarSrc = photoPreview || profile.profilePhoto || profile.user?.image;
+  const avatarSrc =
+    photoPreview ||
+    (profile.profilePhoto ? `${profile.profilePhoto}?t=${Date.now()}` : null) ||
+    profile.user?.image;
 
   return (
     <motion.div
@@ -252,7 +255,7 @@ export default function StudentProfile() {
                     alt={profile.user?.name || "Profile"}
                     fill
                     sizes="96px"
-                    priority
+                    unoptimized
                     className="rounded-full object-cover border-4 border-background shadow-lg"
                   />
                 </div>
