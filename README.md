@@ -35,6 +35,15 @@ ScholarTrack is a comprehensive SaaS platform designed to help universities stre
 
 ---
 
+## 🔗 Important Links
+
+| Resource | URL |
+| :--- | :--- |
+| **🚀 Live Frontend** | [https://frontend-scholar-track.vercel.app](https://frontend-scholar-track.vercel.app) |
+| **⚙️ Live Backend** | [https://backend-scholar-track.vercel.app](https://backend-scholar-track.vercel.app) |
+| **📂 Frontend Repo** | [https://github.com/Rishad1404/frontend-scholar-track](https://github.com/Rishad1404/frontend-scholar-track) |
+| **🗄️ Backend Repo** | [https://github.com/Rishad1404/backend-scholar-track](https://github.com/Rishad1404/backend-scholar-track) |
+
 ## 🛠️ Tech Stack
 
 ### Frontend (Client-Side)
