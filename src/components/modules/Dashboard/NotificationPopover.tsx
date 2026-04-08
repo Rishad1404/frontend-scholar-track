@@ -236,7 +236,7 @@ const NotificationPopover = () => {
         sideOffset={12}
         className="w-90 sm:w-100 flex flex-col rounded-xl border p-0 shadow-xl overflow-hidden bg-popover"
       >
-        <div className="shrink-0 z-10 flex items-center justify-between px-4 py-3 bg-popover">
+        <div className="relative z-20 flex shrink-0 items-center justify-between bg-popover px-4 py-3">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold">Notifications</h3>
             <AnimatePresence>
@@ -274,9 +274,9 @@ const NotificationPopover = () => {
           )}
         </div>
 
-        <Separator className="shrink-0 z-10" />
+        <Separator className="relative z-20 shrink-0" />
 
-        <ScrollArea className="flex-1 min-h-0 max-h-[60vh] sm:max-h-100">
+        <ScrollArea className="flex-1 min-h-0 max-h-[60vh] sm:max-h-100 relative z-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <motion.div
@@ -424,13 +424,13 @@ const NotificationPopover = () => {
         </ScrollArea>
 
         {safeNotifications.length > 0 && (
-          <div className="shrink-0 z-10 mt-auto border-t bg-muted/20 p-2">
+          <div className="relative z-20 mt-auto shrink-0 border-t bg-popover p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <button
               onClick={() => {
                 setIsOpen(false);
                 router.push("/notifications");
               }}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted/50"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-xs font-semibold transition-colors hover:bg-muted/60"
               style={{ color: BRAND.teal }}
             >
               <span>View All Notifications</span>

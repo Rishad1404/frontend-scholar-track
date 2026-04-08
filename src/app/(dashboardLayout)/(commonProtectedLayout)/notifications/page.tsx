@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import {
   BellOff,
   CheckCheck,
   ChevronRight,
+  ChevronLeft,
   FileText,
   ClipboardCheck,
   XCircle,
@@ -52,78 +52,18 @@ interface NotificationConfig {
 }
 
 const NOTIFICATION_CONFIG: Record<NotificationType, NotificationConfig> = {
-  APPLICATION_SUBMITTED: {
-    icon: FileText,
-    color: "#0097b2",
-    bgColor: "#0097b215",
-    label: "Application Submitted",
-  },
-  APPLICATION_SCREENING_PASSED: {
-    icon: ClipboardCheck,
-    color: "#22c55e",
-    bgColor: "#22c55e15",
-    label: "Screening Passed",
-  },
-  APPLICATION_SCREENING_REJECTED: {
-    icon: XCircle,
-    color: "#ef4444",
-    bgColor: "#ef444415",
-    label: "Screening Rejected",
-  },
-  APPLICATION_UNDER_REVIEW: {
-    icon: Eye,
-    color: "#f59e0b",
-    bgColor: "#f59e0b15",
-    label: "Under Review",
-  },
-  APPLICATION_APPROVED: {
-    icon: ThumbsUp,
-    color: "#22c55e",
-    bgColor: "#22c55e15",
-    label: "Approved",
-  },
-  APPLICATION_REJECTED: {
-    icon: ThumbsDown,
-    color: "#ef4444",
-    bgColor: "#ef444415",
-    label: "Rejected",
-  },
-  DISBURSEMENT_PROCESSED: {
-    icon: Banknote,
-    color: "#10b981",
-    bgColor: "#10b98115",
-    label: "Disbursement",
-  },
-  SCHOLARSHIP_PUBLISHED: {
-    icon: Sparkles,
-    color: "#8b5cf6",
-    bgColor: "#8b5cf615",
-    label: "Scholarship Published",
-  },
-  INVITE_RECEIVED: {
-    icon: Mail,
-    color: "#0097b2",
-    bgColor: "#0097b215",
-    label: "Invite",
-  },
-  UNIVERSITY_APPROVED: {
-    icon: Building2,
-    color: "#22c55e",
-    bgColor: "#22c55e15",
-    label: "University Approved",
-  },
-  UNIVERSITY_SUSPENDED: {
-    icon: ShieldAlert,
-    color: "#ef4444",
-    bgColor: "#ef444415",
-    label: "University Suspended",
-  },
-  SYSTEM_ANNOUNCEMENT: {
-    icon: Megaphone,
-    color: "#4b2875",
-    bgColor: "#4b287515",
-    label: "System Announcement",
-  },
+  APPLICATION_SUBMITTED: { icon: FileText, color: "#0097b2", bgColor: "#0097b215", label: "Application Submitted" },
+  APPLICATION_SCREENING_PASSED: { icon: ClipboardCheck, color: "#22c55e", bgColor: "#22c55e15", label: "Screening Passed" },
+  APPLICATION_SCREENING_REJECTED: { icon: XCircle, color: "#ef4444", bgColor: "#ef444415", label: "Screening Rejected" },
+  APPLICATION_UNDER_REVIEW: { icon: Eye, color: "#f59e0b", bgColor: "#f59e0b15", label: "Under Review" },
+  APPLICATION_APPROVED: { icon: ThumbsUp, color: "#22c55e", bgColor: "#22c55e15", label: "Approved" },
+  APPLICATION_REJECTED: { icon: ThumbsDown, color: "#ef4444", bgColor: "#ef444415", label: "Rejected" },
+  DISBURSEMENT_PROCESSED: { icon: Banknote, color: "#10b981", bgColor: "#10b98115", label: "Disbursement" },
+  SCHOLARSHIP_PUBLISHED: { icon: Sparkles, color: "#8b5cf6", bgColor: "#8b5cf615", label: "Scholarship Published" },
+  INVITE_RECEIVED: { icon: Mail, color: "#0097b2", bgColor: "#0097b215", label: "Invite" },
+  UNIVERSITY_APPROVED: { icon: Building2, color: "#22c55e", bgColor: "#22c55e15", label: "University Approved" },
+  UNIVERSITY_SUSPENDED: { icon: ShieldAlert, color: "#ef4444", bgColor: "#ef444415", label: "University Suspended" },
+  SYSTEM_ANNOUNCEMENT: { icon: Megaphone, color: "#4b2875", bgColor: "#4b287515", label: "System Announcement" },
 };
 
 // ─── Time Ago Helper ───
@@ -161,22 +101,22 @@ const itemVariants = {
   },
 };
 
+const ITEMS_PER_PAGE = 10; // ✅ Adjust this number to show more/less items per page
+
 // ─── Component ───
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
-  const [filteredNotifications, setFilteredNotifications] = useState<
-    INotification[]
-  >([]);
+  const [filteredNotifications, setFilteredNotifications] = useState<INotification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "unread" | "read">("all");
-  const [selectedType, setSelectedType] = useState<NotificationType | "all">(
-    "all"
-  );
+  const [selectedType, setSelectedType] = useState<NotificationType | "all">("all");
   const [isMarkingAll, setIsMarkingAll] = useState(false);
+  
+  // ✅ Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  
   const router = useRouter();
-
-  const {  resetUnreadCount, decrementUnreadCount } =
-    useNotifications();
+  const { resetUnreadCount, decrementUnreadCount } = useNotifications();
 
   // ─── Fetch all notifications ───
   const fetchNotifications = useCallback(async () => {
@@ -208,6 +148,8 @@ const NotificationsPage = () => {
     }
 
     setFilteredNotifications(filtered);
+    // ✅ Reset to page 1 whenever filters change
+    setCurrentPage(1); 
   }, [notifications, activeTab, selectedType]);
 
   // ─── Initial fetch ───
@@ -261,6 +203,13 @@ const NotificationsPage = () => {
     },
     {} as Record<NotificationType, number>
   );
+
+  // ─── Pagination Logic ───
+  const totalPages = Math.ceil(filteredNotifications.length / ITEMS_PER_PAGE);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  // ✅ Only grab the items for the current page
+  const currentItems = filteredNotifications.slice(indexOfFirstItem, indexOfLastItem); 
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -460,6 +409,7 @@ const NotificationsPage = () => {
               <CardContent>
                 <Tabs
                   value={activeTab}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onValueChange={(v) => setActiveTab(v as any)}
                   className="w-full"
                 >
@@ -535,95 +485,130 @@ const NotificationsPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {filteredNotifications.map((notification) => {
-                    const config =
-                      NOTIFICATION_CONFIG[notification.type] ||
-                      NOTIFICATION_CONFIG.SYSTEM_ANNOUNCEMENT;
-                    const Icon = config.icon;
+                <>
+                  <div className="space-y-2">
+                    {/* ✅ Map over currentItems instead of all filteredNotifications */}
+                    {currentItems.map((notification) => {
+                      const config =
+                        NOTIFICATION_CONFIG[notification.type] ||
+                        NOTIFICATION_CONFIG.SYSTEM_ANNOUNCEMENT;
+                      const Icon = config.icon;
 
-                    return (
-                      <motion.div
-                        key={notification.id}
-                        variants={itemVariants}
-                        layout
-                      >
-                        <button
-                          onClick={() => handleNotificationClick(notification)}
-                          className="group flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200 hover:border-border hover:bg-muted/30"
+                      return (
+                        <motion.div
+                          key={notification.id}
+                          variants={itemVariants}
+                          layout
                         >
-                          {/* Icon */}
-                          <div
-                            className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-105"
-                            style={{
-                              background: config.bgColor,
-                            }}
+                          <button
+                            onClick={() => handleNotificationClick(notification)}
+                            className="group flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200 hover:border-border hover:bg-muted/30"
                           >
-                            <Icon
-                              className="h-5 w-5"
-                              style={{ color: config.color }}
-                            />
-                          </div>
+                            {/* Icon */}
+                            <div
+                              className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-105"
+                              style={{
+                                background: config.bgColor,
+                              }}
+                            >
+                              <Icon
+                                className="h-5 w-5"
+                                style={{ color: config.color }}
+                              />
+                            </div>
 
-                          {/* Content */}
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between gap-3">
-                              <div>
-                                <h4
-                                  className={`text-sm font-medium ${
-                                    notification.isRead
-                                      ? "text-foreground/80"
-                                      : "text-foreground"
-                                  }`}
-                                >
-                                  {notification.title}
-                                </h4>
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                  {notification.message}
-                                </p>
+                            {/* Content */}
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <h4
+                                    className={`text-sm font-medium ${
+                                      notification.isRead
+                                        ? "text-foreground/80"
+                                        : "text-foreground"
+                                    }`}
+                                  >
+                                    {notification.title}
+                                  </h4>
+                                  <p className="mt-1 text-sm text-muted-foreground">
+                                    {notification.message}
+                                  </p>
+                                </div>
+
+                                <div className="flex shrink-0 items-center gap-2">
+                                  {!notification.isRead && (
+                                    <span
+                                      className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-white"
+                                      style={{
+                                        background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
+                                      }}
+                                    >
+                                      New
+                                    </span>
+                                  )}
+                                  <span className="text-xs text-muted-foreground">
+                                    {timeAgo(notification.createdAt)}
+                                  </span>
+                                </div>
                               </div>
 
-                              <div className="flex shrink-0 items-center gap-2">
-                                {!notification.isRead && (
-                                  <span
-                                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-white"
-                                    style={{
-                                      background: `linear-gradient(135deg, ${BRAND.purple}, ${BRAND.teal})`,
-                                    }}
-                                  >
-                                    New
+                              <div className="mt-3 flex items-center gap-3">
+                                <span
+                                  className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                                  style={{
+                                    background: config.bgColor,
+                                    color: config.color,
+                                  }}
+                                >
+                                  {config.label}
+                                </span>
+                                {notification.link && (
+                                  <span className="text-xs text-muted-foreground">
+                                    Click to view details →
                                   </span>
                                 )}
-                                <span className="text-xs text-muted-foreground">
-                                  {timeAgo(notification.createdAt)}
-                                </span>
                               </div>
                             </div>
 
-                            <div className="mt-3 flex items-center gap-3">
-                              <span
-                                className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-                                style={{
-                                  background: config.bgColor,
-                                  color: config.color,
-                                }}
-                              >
-                                {config.label}
-                              </span>
-                              {notification.link && (
-                                <span className="text-xs text-muted-foreground">
-                                  Click to view details →
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                            <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground/50 transition-transform duration-200 group-hover:translate-x-1" />
+                          </button>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
 
-                          <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground/50 transition-transform duration-200 group-hover:translate-x-1" />
-                        </button>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                  {/* ✅ Pagination Footer */}
+                  {totalPages > 1 && (
+                    <div className="mt-6 flex items-center justify-between border-t pt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="gap-1"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      
+                      <div className="text-sm text-muted-foreground">
+                        Page <span className="font-medium text-foreground">{currentPage}</span> of{" "}
+                        <span className="font-medium text-foreground">{totalPages}</span>
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="gap-1"
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
