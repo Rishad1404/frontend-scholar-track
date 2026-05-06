@@ -64,17 +64,83 @@ ScholarTrack is a comprehensive SaaS platform designed to help universities stre
 
 ## 🚀 Getting Started
 
-Follow these instructions to set up the project locally.
+Because this application uses a decoupled architecture, you will need to run both the backend server and the frontend client simultaneously. Follow these steps to get a local development environment up and running.
 
 ### Prerequisites
-Make sure you have the following installed:
+Make sure you have the following installed on your machine:
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- A PostgreSQL Database (e.g., Supabase, Neon)
+- [Git](https://git-scm.com/)
+- A PostgreSQL Database (e.g., local PostgreSQL, Supabase, Neon)
 - A [Stripe Developer Account](https://stripe.com/)
 
-### 1. Clone the Repository
+---
 
+### 1. Backend Setup
+
+First, open your terminal to set up the Express API and connect it to your database.
+
+**Step 1: Clone the repository and install dependencies**
 ```bash
-git clone https://github.com/Rishad1404/frontend-scholar-track.git
-cd scholartrack
+git clone [https://github.com/Rishad1404/backend-scholar-track.git](https://github.com/Rishad1404/backend-scholar-track.git)
+cd backend-scholar-track
+npm install
+```
+
+**Step 2: Set up environment variables** Create a `.env` file in the root of the `backend-scholar-track` directory and add your credentials:
+```env
+PORT=5000
+DATABASE_URL="postgresql://user:password@localhost:5432/scholartrack"
+FRONTEND_URL="http://localhost:3000"
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+BETTER_AUTH_SECRET="your_secure_random_string"
+```
+
+**Step 3: Initialize the database and start the server**
+```bash
+# Push the Prisma schema to your PostgreSQL database
+npx prisma db push
+
+# Generate the Prisma Client
+npx prisma generate
+
+# Start the backend development server
+npm run dev
+```
+*The backend should now be running on `http://localhost:5000`.*
+
+---
+
+### 2. Frontend Setup
+
+Open a **new terminal window** to set up the Next.js client while keeping the backend running.
+
+**Step 1: Clone the repository and install dependencies**
+```bash
+git clone [https://github.com/Rishad1404/frontend-scholar-track.git](https://github.com/Rishad1404/frontend-scholar-track.git)
+cd frontend-scholar-track
+npm install
+```
+
+**Step 2: Set up environment variables** Create a `.env.local` file in the root of the `frontend-scholar-track` directory and add your credentials:
+```env
+NEXT_PUBLIC_API_URL="http://localhost:5000"
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+```
+
+**Step 3: Start the frontend application**
+```bash
+npm run dev
+```
+*The frontend should now be running on `http://localhost:3000`.*
+
+🎉 **You're all set!** Open `http://localhost:3000` in your browser to view and interact with the full-stack application.
+
+---
+
+## 👨‍💻 Author
+
+**Md. Rishad Islam**
+- 🌐 [Portfolio](https://rishad-islam.vercel.app)
+- 💼 [LinkedIn](https://linkedin.com/in/rishad-islam14)
+- 🐙 [GitHub](https://github.com/Rishad1404)
